@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestCreateShortUrlHandler(t *testing.T) {
+func TestCreateShortURLHandler(t *testing.T) {
 
 	type want struct {
 		contentType string
@@ -71,7 +71,7 @@ func TestCreateShortUrlHandler(t *testing.T) {
 			request := httptest.NewRequest(http.MethodPost, requestURL, bytes.NewReader(body))
 			request.Header.Add("Content-Type", "application/json")
 			w := httptest.NewRecorder()
-			h := http.HandlerFunc(CreateShortUrlHandler)
+			h := http.HandlerFunc(CreateShortURLHandler)
 			h.ServeHTTP(w, request)
 			result := w.Result()
 			assert.Equal(t, tt.want.statusCode, result.StatusCode)

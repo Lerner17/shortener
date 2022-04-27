@@ -8,12 +8,12 @@ import (
 	database "github.com/Lerner17/shortener/internal/db"
 )
 
-type createShortUrlBody struct {
+type createShortURLBody struct {
 	URL string `json:"url"`
 }
 
-func CreateShortUrlHandler(w http.ResponseWriter, r *http.Request) {
-	var body createShortUrlBody
+func CreateShortURLHandler(w http.ResponseWriter, r *http.Request) {
+	var body createShortURLBody
 	db := database.GetInstance()
 	err := json.NewDecoder(r.Body).Decode(&body)
 	if err != nil || body.URL == "" {
