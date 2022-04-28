@@ -15,7 +15,7 @@ import (
 )
 
 func main() {
-	http.HandleFunc("/", handlers.RedirectHandler)
+	http.HandleFunc("/", handlers.MainHandler)
 	server := &http.Server{
 		Addr: "127.0.0.1:8080",
 	}

@@ -9,7 +9,7 @@ import (
 	database "github.com/Lerner17/shortener/internal/db"
 )
 
-func RedirectHandler(w http.ResponseWriter, r *http.Request) {
+func MainHandler(w http.ResponseWriter, r *http.Request) {
 	db := database.GetInstance()
 
 	switch r.Method {
@@ -17,11 +17,11 @@ func RedirectHandler(w http.ResponseWriter, r *http.Request) {
 		db := database.GetInstance()
 		defer r.Body.Close()
 		body, err := io.ReadAll(r.Body)
-
-		if err != nil && string(body) == "" {
+		if err != nil || string(body) == "" {
 			w.Header().Set("Content-Type", "plain/text")
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte("Bad request"))
+			return
 		}
 		key, _ := db.Insert(string(body))
 		w.Header().Set("Content-Type", "plain/text")
