@@ -13,7 +13,7 @@ import (
 
 func TestMainHandlerSuccess(t *testing.T) {
 	database := db.GetInstance()
-	var urlKeyValue map[string]string = make(map[string]string)
+	var urlKeyValue map[string]string = map[string]string{}
 	urlList := []string{"https://youtube.com", "https://yandex.ru", "https://google.com", "https://go.dev"}
 
 	type want struct {
@@ -133,6 +133,7 @@ func TestMainHandlerSuccess(t *testing.T) {
 			h := http.HandlerFunc(MainHandler)
 			h.ServeHTTP(w, request)
 			result := w.Result()
+			defer result.Body.Close()
 			assert.Equal(t, tt.want.statusCode, result.StatusCode)
 			assert.Equal(t, tt.want.contentType, result.Header.Get("Content-Type"))
 		})

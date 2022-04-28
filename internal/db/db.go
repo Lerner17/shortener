@@ -34,7 +34,7 @@ func stringWithCharset(length int, charset string) string {
 func (d *db) getUniqueID() string {
 	var uniqueID string
 	for {
-		var randomCandidate string = stringWithCharset(7, charset)
+		randomCandidate := stringWithCharset(7, charset)
 		if _, ok := d.state[randomCandidate]; !ok {
 			uniqueID = randomCandidate
 			break
