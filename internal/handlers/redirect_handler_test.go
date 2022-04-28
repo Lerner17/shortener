@@ -86,8 +86,7 @@ func TestRedirectHandlerUndefinded(t *testing.T) {
 	}{
 		{
 			name:    "Bad test #1",
-			request: "/",
-			id:      "aaa",
+			request: "/aaa",
 			want: want{
 				contentType: "plain/text",
 				statusCode:  http.StatusBadRequest,
@@ -95,8 +94,7 @@ func TestRedirectHandlerUndefinded(t *testing.T) {
 		},
 		{
 			name:    "Bad test #3",
-			request: "/",
-			id:      "ccc",
+			request: "ccc",
 			want: want{
 				contentType: "plain/text",
 				statusCode:  http.StatusBadRequest,
@@ -104,8 +102,7 @@ func TestRedirectHandlerUndefinded(t *testing.T) {
 		},
 		{
 			name:    "Bad test #3",
-			request: "/",
-			id:      "xyz1",
+			request: "/xyz1",
 			want: want{
 				contentType: "plain/text",
 				statusCode:  http.StatusBadRequest,
@@ -113,8 +110,7 @@ func TestRedirectHandlerUndefinded(t *testing.T) {
 		}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var requestURL string = fmt.Sprintf("%s%s", tt.request, tt.id)
-			request := httptest.NewRequest(http.MethodGet, requestURL, nil)
+			request := httptest.NewRequest(http.MethodGet, tt.request, nil)
 			w := httptest.NewRecorder()
 			h := http.HandlerFunc(RedirectHandler)
 			h.ServeHTTP(w, request)
