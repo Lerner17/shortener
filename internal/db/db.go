@@ -31,10 +31,10 @@ func stringWithCharset(length int, charset string) string {
 	return string(b)
 }
 
-func (d *db) getUniqueId() string {
+func (d *db) getUniqueID() string {
 	var uniqueID string
 	for {
-		var randomCandidate string = stringWithCharset(7, charset)
+		randomCandidate := stringWithCharset(7, charset)
 		if _, ok := d.state[randomCandidate]; !ok {
 			uniqueID = randomCandidate
 			break
@@ -71,7 +71,7 @@ func (d *db) InsertWithKey(key, value string) (string, error) {
 }
 
 func (d *db) Insert(value string) (string, string) {
-	uniqueID := d.getUniqueId()
+	uniqueID := d.getUniqueID()
 	d.state[uniqueID] = value
 	return uniqueID, d.state[uniqueID]
 }
