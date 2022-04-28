@@ -75,7 +75,6 @@ func TestRedirectHandlerUndefinded(t *testing.T) {
 	type want struct {
 		contentType string
 		statusCode  int
-		content     string
 	}
 
 	tests := []struct {
@@ -94,7 +93,7 @@ func TestRedirectHandlerUndefinded(t *testing.T) {
 		},
 		{
 			name:    "Bad test #3",
-			request: "ccc",
+			request: "/ccc",
 			want: want{
 				contentType: "plain/text",
 				statusCode:  http.StatusBadRequest,
