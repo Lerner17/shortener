@@ -16,7 +16,6 @@ import (
 
 func main() {
 	http.HandleFunc("/", handlers.RedirectHandler)
-	http.HandleFunc("/createShortURL", handlers.CreateShortURLHandler)
 	server := &http.Server{
 		Addr: "127.0.0.1:8080",
 	}
