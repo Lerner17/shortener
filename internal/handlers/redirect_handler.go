@@ -1,21 +1,33 @@
 package handlers
 
 import (
-	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"strings"
 
 	database "github.com/Lerner17/shortener/internal/db"
 )
 
-type createShortURLBody struct {
-	URL string `json:"url"`
-}
-
 func RedirectHandler(w http.ResponseWriter, r *http.Request) {
 	db := database.GetInstance()
-	if r.Method == "GET" {
+
+	switch r.Method {
+	case "POST":
+		db := database.GetInstance()
+		defer r.Body.Close()
+		body, err := io.ReadAll(r.Body)
+
+		if err != nil && string(body) == "" {
+			w.Header().Set("Content-Type", "plain/text")
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("Bad request"))
+		}
+		key, _ := db.Insert(string(body))
+		w.Header().Set("Content-Type", "plain/text")
+		w.WriteHeader(http.StatusCreated)
+		w.Write([]byte(fmt.Sprintf("http://localhost:8080/%s", key)))
+	case "GET":
 		url := strings.Split(r.URL.Path, "/")
 		if fullURL, ok := db.Find(url[1]); len(url) > 1 && url[1] != "" && ok {
 			w.Header().Set("Content-Type", "plain/text")
@@ -24,20 +36,12 @@ func RedirectHandler(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "plain/text")
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte("Undefined redirect"))
+			return
 		}
-	} else if r.Method == "POST" {
-		var body createShortURLBody
-		db := database.GetInstance()
-		err := json.NewDecoder(r.Body).Decode(&body)
-		if err != nil || body.URL == "" {
-			w.Header().Set("Content-Type", "plain/text")
-			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte("Bad request"))
-		}
-		key, _ := db.Insert(body.URL)
+	default:
 		w.Header().Set("Content-Type", "plain/text")
-		w.WriteHeader(http.StatusCreated)
-		w.Write([]byte(fmt.Sprintf("http://localhost:8080/%s", key)))
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		w.Write([]byte("Method Not Allowed"))
 	}
 
 }
