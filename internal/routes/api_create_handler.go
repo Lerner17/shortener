@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/Lerner17/shortener/internal/config"
 	database "github.com/Lerner17/shortener/internal/db"
 )
 
@@ -18,6 +19,7 @@ type ShortenResponse struct {
 
 func ShortenerAPIHandler(w http.ResponseWriter, r *http.Request) {
 	db := database.NewURLStorage()
+	cfg := config.GetConfig()
 	var body ShortenBody
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		w.Header().Set("Content-Type", "application/json")
@@ -35,7 +37,7 @@ func ShortenerAPIHandler(w http.ResponseWriter, r *http.Request) {
 
 	key, _ := db.CreateURL(body.URL)
 	response := &ShortenResponse{
-		Result: fmt.Sprintf("http://localhost:8080/%s", key),
+		Result: fmt.Sprintf("%s/%s", cfg.BaseURL, key),
 	}
 	serializedResponse, err := json.Marshal(&response)
 	if err != nil {

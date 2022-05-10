@@ -11,12 +11,14 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/Lerner17/shortener/internal/config"
 	"github.com/Lerner17/shortener/internal/routes"
 )
 
 func main() {
 	r := routes.NewRouter()
-	if err := http.ListenAndServe(":8080", r); err != nil {
+	cfg := config.GetConfig()
+	if err := http.ListenAndServe(cfg.ServerAddress, r); err != nil {
 		log.Fatal(err)
 	}
 }
