@@ -8,6 +8,7 @@ import (
 func NewRouter() chi.Router {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
+	r.Post("/api/shorten", ShortenerAPIHandler)
 	r.Get("/{urlID}", RedirectHandler)
 	r.Post("/", CreateShortUrlHandler)
 	return r
