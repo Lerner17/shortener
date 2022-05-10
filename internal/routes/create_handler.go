@@ -10,7 +10,7 @@ import (
 
 func CreateShortUrlHandler(w http.ResponseWriter, r *http.Request) {
 
-	db := database.GetInstance()
+	db := database.NewURLStorage()
 	defer r.Body.Close()
 	body, err := io.ReadAll(r.Body)
 	if err != nil || string(body) == "" {
@@ -18,7 +18,7 @@ func CreateShortUrlHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Bad request"))
 		return
 	}
-	key, _ := db.Insert(string(body))
+	key, _ := db.CreateURL(string(body))
 	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte(fmt.Sprintf("http://localhost:8080/%s", key)))
 }

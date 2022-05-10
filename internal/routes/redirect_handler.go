@@ -8,10 +8,10 @@ import (
 )
 
 func RedirectHandler(w http.ResponseWriter, r *http.Request) {
-	db := database.GetInstance()
+	db := database.NewURLStorage()
 
 	urlID := chi.URLParam(r, "urlID")
-	if fullURL, ok := db.Find(urlID); ok {
+	if fullURL, ok := db.GetURL(urlID); ok {
 		w.Header().Set("Content-Type", "plain/text")
 		http.Redirect(w, r, fullURL, http.StatusTemporaryRedirect)
 	} else {
