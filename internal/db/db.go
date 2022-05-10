@@ -2,39 +2,47 @@ package db
 
 import (
 	"errors"
-	"math/rand"
 	"sync"
-	"time"
+
+	"github.com/Lerner17/shortener/internal/helpers"
 )
 
-const charset = "abcdefghijklmnopqrstuvwxyz" + "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-
 var lock = &sync.Mutex{}
-var seededRand *rand.Rand = rand.New(
-	rand.NewSource(time.Now().UnixNano()))
 
-type db struct {
+// var _ URLStorage = &memdb{}
+
+type URLStorage interface {
+	GetURL(string) (string, bool)
+	CreateURL(string) (string, string)
+}
+
+func (d *memdb) GetURL(shortURL string) (string, bool) {
+	return d.Find(shortURL)
+}
+
+func (d *memdb) CreateURL(fullURL string) (string, string) {
+	return d.Insert(fullURL)
+}
+
+type memdb struct {
 	state map[string]string
 }
 
-var dbInstance *db
+var dbInstance *memdb
 
 func init() {
-	dbInstance = &db{state: make(map[string]string)}
+	dbInstance = &memdb{state: make(map[string]string)}
 }
 
-func stringWithCharset(length int, charset string) string {
-	b := make([]byte, length)
-	for i := range b {
-		b[i] = charset[seededRand.Intn(len(charset))]
-	}
-	return string(b)
+func NewURLStorage() URLStorage {
+	us := GetInstance()
+	return us
 }
 
-func (d *db) getUniqueId() string {
+func (d *memdb) getUniqueID() string {
 	var uniqueID string
 	for {
-		var randomCandidate string = stringWithCharset(7, charset)
+		randomCandidate := helpers.StringWithCharset(7)
 		if _, ok := d.state[randomCandidate]; !ok {
 			uniqueID = randomCandidate
 			break
@@ -44,25 +52,25 @@ func (d *db) getUniqueId() string {
 	return uniqueID
 }
 
-func GetInstance() *db {
+func GetInstance() *memdb {
 	if dbInstance == nil {
 		lock.Lock()
 		defer lock.Unlock()
 		if dbInstance == nil {
-			dbInstance = &db{}
+			dbInstance = &memdb{}
 		}
 	}
 	return dbInstance
 }
 
-func (d *db) Find(key string) (string, bool) {
+func (d *memdb) Find(key string) (string, bool) {
 	if result, ok := d.state[key]; ok {
 		return result, ok
 	}
 	return "", false
 }
 
-func (d *db) InsertWithKey(key, value string) (string, error) {
+func (d *memdb) InsertWithKey(key, value string) (string, error) {
 	if key == "" || value == "" {
 		return "", errors.New("empty key or value")
 	}
@@ -70,8 +78,8 @@ func (d *db) InsertWithKey(key, value string) (string, error) {
 	return value, nil
 }
 
-func (d *db) Insert(value string) (string, string) {
-	uniqueID := d.getUniqueId()
+func (d *memdb) Insert(value string) (string, string) {
+	uniqueID := d.getUniqueID()
 	d.state[uniqueID] = value
 	return uniqueID, d.state[uniqueID]
 }

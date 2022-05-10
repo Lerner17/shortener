@@ -1,27 +1,24 @@
-package handlers
+package routes
 
 import (
-	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 
 	database "github.com/Lerner17/shortener/internal/db"
 )
 
-type createShortUrlBody struct {
-	URL string `json:"url"`
-}
-
 func CreateShortUrlHandler(w http.ResponseWriter, r *http.Request) {
-	var body createShortUrlBody
-	db := database.GetInstance()
-	err := json.NewDecoder(r.Body).Decode(&body)
 
-	if err != nil || body.URL == "" {
+	db := database.NewURLStorage()
+	defer r.Body.Close()
+	body, err := io.ReadAll(r.Body)
+	if err != nil || string(body) == "" {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("Bad request"))
 		return
 	}
-	key, _ := db.Insert(body.URL)
+	key, _ := db.CreateURL(string(body))
+	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte(fmt.Sprintf("http://localhost:8080/%s", key)))
 }

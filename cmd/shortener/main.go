@@ -11,14 +11,12 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/Lerner17/shortener/internal/handlers"
+	"github.com/Lerner17/shortener/internal/routes"
 )
 
 func main() {
-	http.HandleFunc("/createShortURL", handlers.CreateShortUrlHandler)
-	http.HandleFunc("/", handlers.RedirectHandler)
-	server := &http.Server{
-		Addr: "127.0.0.1:8080",
+	r := routes.NewRouter()
+	if err := http.ListenAndServe(":8080", r); err != nil {
+		log.Fatal(err)
 	}
-	log.Fatal(server.ListenAndServe())
 }
