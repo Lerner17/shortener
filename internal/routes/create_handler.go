@@ -8,7 +8,7 @@ import (
 	database "github.com/Lerner17/shortener/internal/db"
 )
 
-func CreateShortUrlHandler(w http.ResponseWriter, r *http.Request) {
+func CreateShortURLHandler(w http.ResponseWriter, r *http.Request) {
 
 	db := database.NewURLStorage()
 	defer r.Body.Close()
