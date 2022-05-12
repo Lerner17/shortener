@@ -19,20 +19,20 @@ func TestRedirectHandler(t *testing.T) {
 	database := db.GetInstance()
 
 	resp, _ := helpers.TestRequest(t, ts, http.MethodGet, fmt.Sprintf("/%s", "abc331"), nil)
+	defer resp.Body.Close()
 	assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
-	resp.Body.Close()
 
 	resp, _ = helpers.TestRequest(t, ts, http.MethodGet, fmt.Sprintf("/%s", "asdsadad"), nil)
+	defer resp.Body.Close()
 	assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
-	resp.Body.Close()
 
 	resp, _ = helpers.TestRequest(t, ts, http.MethodGet, fmt.Sprintf("/%s", "asdsadad"), nil)
+	defer resp.Body.Close()
 	assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
-	resp.Body.Close()
 
 	id, _ := database.Insert("http://yandex.ru")
 	resp, _ = helpers.TestRequest(t, ts, http.MethodGet, fmt.Sprintf("/%s", id), nil)
+	defer resp.Body.Close()
 	assert.Equal(t, http.StatusTemporaryRedirect, resp.StatusCode)
-	resp.Body.Close()
 
 }
