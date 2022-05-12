@@ -17,12 +17,13 @@ func TestCreateHandler(t *testing.T) {
 
 	resp, _ := helpers.TestRequest(t, ts, http.MethodPost, "/", bytes.NewReader([]byte("https://yandex.ru")))
 	assert.Equal(t, http.StatusCreated, resp.StatusCode)
+	resp.Body.Close()
 
 	resp, _ = helpers.TestRequest(t, ts, http.MethodGet, "/", nil)
 	assert.Equal(t, http.StatusMethodNotAllowed, resp.StatusCode)
+	resp.Body.Close()
 
 	resp, _ = helpers.TestRequest(t, ts, http.MethodPost, "/", nil)
 	assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
-
-	defer resp.Body.Close()
+	resp.Body.Close()
 }

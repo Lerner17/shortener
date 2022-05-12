@@ -18,16 +18,18 @@ func TestShortenerAPIHandler(t *testing.T) {
 	resp, _ := helpers.TestRequest(t, ts, http.MethodPost, "/api/shorten", bytes.NewReader([]byte(`{"rl": "https://example.com"}`)))
 	assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
 	assert.Equal(t, helpers.ContentTypeJSON, resp.Header.Get("Content-Type"))
+	resp.Body.Close()
 
 	resp, _ = helpers.TestRequest(t, ts, http.MethodPost, "/api/shorten", bytes.NewReader([]byte(`{"url": "https://example.com"}`)))
 	assert.Equal(t, http.StatusCreated, resp.StatusCode)
 	assert.Equal(t, helpers.ContentTypeJSON, resp.Header.Get("Content-Type"))
+	resp.Body.Close()
 
 	resp, _ = helpers.TestRequest(t, ts, http.MethodPost, "/api/shorten", bytes.NewReader([]byte(`{"url": ""}`)))
 	assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
 	assert.Equal(t, helpers.ContentTypeJSON, resp.Header.Get("Content-Type"))
+	resp.Body.Close()
 
-	defer resp.Body.Close()
 }
 
 // import (
