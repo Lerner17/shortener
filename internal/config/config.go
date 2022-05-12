@@ -8,7 +8,7 @@ import (
 )
 
 type Config struct {
-	ServerAddress string `env:"SERVER_ADDRESS,required"`
+	ServerAddress string `env:"SERVER_ADDRESS" envDefault:"localhost:8080"`
 	BaseURL       string `env:"BASE_URL,required"`
 }
 
