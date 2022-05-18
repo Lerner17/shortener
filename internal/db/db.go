@@ -2,7 +2,7 @@ package db
 
 import (
 	"github.com/Lerner17/shortener/internal/config"
-	"github.com/Lerner17/shortener/internal/db/file_storage"
+	fileStorage "github.com/Lerner17/shortener/internal/db/file_storage"
 	"github.com/Lerner17/shortener/internal/db/memdb"
 )
 
@@ -17,6 +17,6 @@ func GetDB() URLStorage {
 	if cfg.FileStoragePath == "" {
 		return memdb.NewMemDB()
 	} else {
-		return file_storage.NewFileStorage(cfg.FileStoragePath)
+		return fileStorage.NewFileStorage(cfg.FileStoragePath)
 	}
 }
