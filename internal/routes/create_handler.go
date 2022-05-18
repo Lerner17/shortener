@@ -8,11 +8,11 @@ import (
 	"github.com/Lerner17/shortener/internal/config"
 )
 
-type CreateShortURLHandlerUrlCreator interface {
+type CreateShortURLHandlerURLCreator interface {
 	CreateURL(string) (string, string)
 }
 
-func CreateShortURLHandler(db CreateShortURLHandlerUrlCreator) http.HandlerFunc {
+func CreateShortURLHandler(db CreateShortURLHandlerURLCreator) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cfg := config.GetConfig()
 		defer r.Body.Close()

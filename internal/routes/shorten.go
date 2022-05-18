@@ -16,11 +16,11 @@ type ShortenResponse struct {
 	Result string `json:"result"`
 }
 
-type UrlCreator interface {
+type URLCreator interface {
 	CreateURL(string) (string, string)
 }
 
-func ShortenerAPIHandler(db UrlCreator) http.HandlerFunc {
+func ShortenerAPIHandler(db URLCreator) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cfg := config.GetConfig()
 		var body ShortenBody
