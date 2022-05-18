@@ -6,11 +6,11 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-type UrlGetter interface {
+type URLGetter interface {
 	GetURL(string) (string, bool)
 }
 
-func RedirectHandler(db UrlGetter) http.HandlerFunc {
+func RedirectHandler(db URLGetter) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		urlID := chi.URLParam(r, "urlID")
 		if fullURL, ok := db.GetURL(urlID); ok {
