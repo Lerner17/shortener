@@ -20,18 +20,6 @@ var once sync.Once
 func GetConfig() *Config {
 	once.Do(func() {
 		log.Println("Load config...")
-		// addressPtr := flag.String("a", "", "SERVER_ADDRESS")
-		// baseURLPtr := flag.String("b", "", "BASE_URL")
-		// fileStoragePathPtr := flag.String("f", "", "FILE_STORAGE_PATH")
-		// flag.Parse()
-		// if *addressPtr != "" || *baseURLPtr != "" {
-		// 	instance = &Config{
-		// 		ServerAddress:   *addressPtr,
-		// 		BaseURL:         *baseURLPtr,
-		// 		FileStoragePath: *fileStoragePathPtr,
-		// 	}
-		// 	return
-		// }
 		instance = &Config{}
 		arg.MustParse(instance)
 	})
