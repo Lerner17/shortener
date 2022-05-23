@@ -9,7 +9,7 @@ import (
 
 type Config struct {
 	ServerAddress   string `arg:"-a,env:SERVER_ADDRESS" default:"localhost:8080"`
-	BaseURL         string `arg:"-b,env:BASE_URL" default:"http://localhost:8080"`
+	BaseURL         string `arg:"-b,env:BASE_URL" default:"localhost:8080"`
 	FileStoragePath string `arg:"-f,env:FILE_STORAGE_PATH" default:""`
 }
 
