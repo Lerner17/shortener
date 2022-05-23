@@ -1,6 +1,7 @@
 package config
 
 import (
+	"flag"
 	"log"
 	"sync"
 
@@ -20,6 +21,18 @@ var once sync.Once
 func GetConfig() *Config {
 	once.Do(func() {
 		log.Println("Load config...")
+		addressPtr := flag.String("a", "", "HOST")
+		baseURLPtr := flag.String("b", "", "BASE_URL")
+		fileStoragePathPtr := flag.String("f", "", "FILE_STORAGE_PATH")
+		flag.Parse()
+		if *addressPtr != "" || *baseURLPtr != "" {
+			instance = &Config{
+				ServerAddress:   *addressPtr,
+				BaseURL:         *baseURLPtr,
+				FileStoragePath: *fileStoragePathPtr,
+			}
+			return
+		}
 		instance = &Config{}
 		if err := env.Parse(instance); err != nil {
 			log.Fatalf("Cannot parse env variables: %v", err)
