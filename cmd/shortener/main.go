@@ -11,14 +11,18 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/Lerner17/shortener/internal/handlers"
+	"github.com/Lerner17/shortener/internal/config"
+	"github.com/Lerner17/shortener/internal/routes"
 )
 
+func getDBorMemDB() {
+
+}
+
 func main() {
-	http.HandleFunc("/createShortURL", handlers.CreateShortUrlHandler)
-	http.HandleFunc("/", handlers.RedirectHandler)
-	server := &http.Server{
-		Addr: "127.0.0.1:8080",
+	r := routes.NewRouter()
+	cfg := config.GetConfig()
+	if err := http.ListenAndServe(cfg.ServerAddress, r); err != nil {
+		log.Fatal(err)
 	}
-	log.Fatal(server.ListenAndServe())
 }
