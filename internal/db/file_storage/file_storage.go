@@ -8,11 +8,13 @@ import (
 	"io/ioutil"
 	"os"
 
+	"github.com/Lerner17/shortener/internal/config"
 	"github.com/Lerner17/shortener/internal/helpers"
 	"github.com/Lerner17/shortener/internal/models"
 )
 
 // var _ URLStorage = &fileStorage{}
+var cfg *config.Config = config.GetConfig()
 
 type fileStorage struct {
 	state  map[string]map[string]string
@@ -61,7 +63,7 @@ func (fs *fileStorage) GetUserURLs(uuid string) models.URLs {
 	var urls models.URLs
 	for k, v := range rawUrls {
 		urls = append(urls, models.URL{
-			ShortURL:    k,
+			ShortURL:    fmt.Sprintf("%s/%s", cfg.BaseURL, k),
 			OriginalURL: v,
 		})
 	}
@@ -96,16 +98,6 @@ func (fs *fileStorage) writeState() error {
 }
 
 func (fs *fileStorage) CreateURL(uuid string, fullURL string) (string, string) {
-	// key := fs.getUniqueID()
-	// url := make(map[string]string)
-	// url[key] = fullURL
-	// fs.state[uuid] = url
-	// err := fs.writeState()
-	// if err != nil {
-	// 	fmt.Printf("Cannot write state to file: %v\n", err)
-	// }
-	// return key, fullURL
-
 	urls := make(map[string]string)
 
 	_, ok := fs.state[uuid]

@@ -2,13 +2,17 @@ package memdb
 
 import (
 	"errors"
+	"fmt"
 	"sync"
 
+	"github.com/Lerner17/shortener/internal/config"
 	"github.com/Lerner17/shortener/internal/helpers"
 	"github.com/Lerner17/shortener/internal/models"
 )
 
 var lock = &sync.Mutex{}
+
+var cfg *config.Config = config.GetConfig()
 
 type memdb struct {
 	state map[string]map[string]string
@@ -36,7 +40,7 @@ func (d *memdb) GetUserURLs(uuid string) models.URLs {
 	var urls models.URLs
 	for k, v := range rawUrls {
 		urls = append(urls, models.URL{
-			ShortURL:    k,
+			ShortURL:    fmt.Sprintf("%s/%s", cfg.BaseURL, k),
 			OriginalURL: v,
 		})
 	}
