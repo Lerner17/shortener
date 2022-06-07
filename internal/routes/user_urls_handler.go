@@ -25,6 +25,7 @@ func UserURLsAPIHandler(db URLListGetter) http.HandlerFunc {
 
 		urlsList := db.GetUserURLs(uuid)
 		fmt.Printf("arrays length: %v\n", len(urlsList))
+		fmt.Printf("arrays: %v\n", urlsList)
 		if len(urlsList) == 0 {
 			w.WriteHeader(http.StatusNoContent)
 			return

@@ -15,7 +15,7 @@ func AuthenticationMiddleware(next http.Handler) http.Handler {
 		// var token string
 		var cookie *http.Cookie
 
-		cookie, err := r.Cookie("__token")
+		cookie, err := r.Cookie("token")
 		if err != nil || !helpers.ValidateToken(cookie) {
 			cookie = helpers.CreateToken()
 		}
