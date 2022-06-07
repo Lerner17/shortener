@@ -15,7 +15,10 @@ func NewRouter() chi.Router {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(mw.GZIPMiddleware)
+	r.Use(mw.AuthenticationMiddleware)
+
 	r.Post("/api/shorten", ShortenerAPIHandler(db))
+	r.Get("/api/user/urls", UserURLsAPIHandler(db))
 	r.Get("/{urlID}", RedirectHandler(db))
 	r.Post("/", CreateShortURLHandler(db))
 	return r
