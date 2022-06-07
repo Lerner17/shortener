@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/Lerner17/shortener/internal/helpers"
@@ -16,14 +15,13 @@ func RedirectHandler(db URLGetter) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		urlID := chi.URLParam(r, "urlID")
 
-		ctx := r.Context()
-		token, ok := ctx.Value("token").(string)
-		if !ok {
-			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-			return
+		var cookie *http.Cookie
+		cookie, err := r.Cookie("token")
+		if err != nil || !helpers.ValidateToken(cookie) {
+			cookie = helpers.CreateToken()
 		}
-		uuid := helpers.GetUUIDFromToken(token)
-		fmt.Println(db.GetURL(uuid, urlID))
+		uuid := helpers.GetUUIDFromToken(cookie.Value)
+
 		if fullURL, ok := db.GetURL(uuid, urlID); ok {
 			w.Header().Set("Content-Type", "plain/text")
 			http.Redirect(w, r, fullURL, http.StatusTemporaryRedirect)

@@ -25,14 +25,13 @@ func ShortenerAPIHandler(db URLCreator) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cfg := config.GetConfig()
 
-		ctx := r.Context()
-		token, ok := ctx.Value("token").(string)
-		fmt.Printf("\n\nTOKEN %v\n\n\n", token)
-		if !ok {
-			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-			return
+		var cookie *http.Cookie
+		cookie, err := r.Cookie("token")
+		if err != nil || !helpers.ValidateToken(cookie) {
+			cookie = helpers.CreateToken()
 		}
-		uuid := helpers.GetUUIDFromToken(token)
+		uuid := helpers.GetUUIDFromToken(cookie.Value)
+
 		var body ShortenBody
 		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 			w.Header().Set("Content-Type", "application/json")

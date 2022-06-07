@@ -23,13 +23,14 @@ func CreateShortURLHandler(db CreateShortURLHandlerURLCreator) http.HandlerFunc 
 			w.Write([]byte("Bad request"))
 			return
 		}
-		ctx := r.Context()
-		token, ok := ctx.Value("token").(string)
-		if !ok {
-			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-			return
+
+		var cookie *http.Cookie
+		cookie, err = r.Cookie("token")
+		if err != nil || !helpers.ValidateToken(cookie) {
+			cookie = helpers.CreateToken()
 		}
-		uuid := helpers.GetUUIDFromToken(token)
+		uuid := helpers.GetUUIDFromToken(cookie.Value)
+
 		key, _ := db.CreateURL(uuid, string(body))
 		w.WriteHeader(http.StatusCreated)
 		w.Write([]byte(fmt.Sprintf("%s/%s", cfg.BaseURL, key)))

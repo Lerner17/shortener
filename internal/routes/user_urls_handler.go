@@ -15,13 +15,12 @@ type URLListGetter interface {
 
 func UserURLsAPIHandler(db URLListGetter) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		ctx := r.Context()
-		token, ok := ctx.Value("token").(string)
-		if !ok {
-			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-			return
+		var cookie *http.Cookie
+		cookie, err := r.Cookie("token")
+		if err != nil || !helpers.ValidateToken(cookie) {
+			cookie = helpers.CreateToken()
 		}
-		uuid := helpers.GetUUIDFromToken(token)
+		uuid := helpers.GetUUIDFromToken(cookie.Value)
 
 		urlsList := db.GetUserURLs(uuid)
 		fmt.Printf("arrays length: %v\n", len(urlsList))
