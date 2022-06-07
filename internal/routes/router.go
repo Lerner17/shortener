@@ -14,6 +14,7 @@ func NewRouter() chi.Router {
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
 	r.Use(mw.GZIPMiddleware)
 	r.Use(mw.AuthenticationMiddleware)
 
