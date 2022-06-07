@@ -83,9 +83,12 @@ func GetInstance() *memdb {
 }
 
 func (d *memdb) Find(uuid string, key string) (string, bool) {
-	userState := d.state[uuid]
 
-	if result, ok := userState[key]; ok {
+	if _, ok := d.state[uuid]; !ok {
+		d.state[uuid] = map[string]string{}
+	}
+
+	if result, ok := d.state[uuid][key]; ok {
 		return result, ok
 	}
 	return "", false
@@ -103,16 +106,12 @@ func (d *memdb) InsertWithKey(uuid string, key, value string) (string, error) {
 
 func (d *memdb) Insert(uuid string, value string) (string, string) {
 
-	urls := make(map[string]string)
-
-	_, ok := d.state[uuid]
-	if ok {
-		urls = d.state[uuid]
+	if _, ok := d.state[uuid]; !ok {
+		d.state[uuid] = map[string]string{}
 	}
 
 	uniqueID := d.getUniqueID()
-	urls[uniqueID] = value
-	d.state[uuid] = urls
+	d.state[uuid][uniqueID] = value
 
 	return uniqueID, d.state[uuid][uniqueID]
 }
