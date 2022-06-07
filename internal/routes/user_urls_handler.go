@@ -23,9 +23,12 @@ func UserURLsAPIHandler(db URLListGetter) http.HandlerFunc {
 		}
 		uuid := helpers.GetUUIDFromToken(token)
 
-		fmt.Printf("!!!!!!!!%v\n", uuid)
-
 		urlsList := db.GetUserURLs(uuid)
+		fmt.Printf("arrays length: %v\n", len(urlsList))
+		if len(urlsList) == 0 {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
 		serializedResponse, err := json.Marshal(&urlsList)
 		if err != nil {
 			w.Header().Set("Content-Type", "application/json")
