@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/Lerner17/shortener/internal/config"
+	"github.com/Lerner17/shortener/internal/helpers"
 )
 
 type ShortenBody struct {
@@ -17,12 +18,20 @@ type ShortenResponse struct {
 }
 
 type URLCreator interface {
-	CreateURL(string) (string, string)
+	CreateURL(string, string) (string, string)
 }
 
 func ShortenerAPIHandler(db URLCreator) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cfg := config.GetConfig()
+
+		var cookie *http.Cookie
+		cookie, err := r.Cookie("token")
+		if err != nil || !helpers.ValidateToken(cookie) {
+			cookie = helpers.CreateToken()
+		}
+		uuid := helpers.GetUUIDFromToken(cookie.Value)
+
 		var body ShortenBody
 		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 			w.Header().Set("Content-Type", "application/json")
@@ -38,7 +47,7 @@ func ShortenerAPIHandler(db URLCreator) http.HandlerFunc {
 			return
 		}
 
-		key, _ := db.CreateURL(body.URL)
+		key, _ := db.CreateURL(uuid, body.URL)
 
 		response := &ShortenResponse{
 			Result: fmt.Sprintf("%s/%s", cfg.BaseURL, key),

@@ -6,10 +6,11 @@ import (
 	"net/http"
 
 	"github.com/Lerner17/shortener/internal/config"
+	"github.com/Lerner17/shortener/internal/helpers"
 )
 
 type CreateShortURLHandlerURLCreator interface {
-	CreateURL(string) (string, string)
+	CreateURL(string, string) (string, string)
 }
 
 func CreateShortURLHandler(db CreateShortURLHandlerURLCreator) http.HandlerFunc {
@@ -22,7 +23,15 @@ func CreateShortURLHandler(db CreateShortURLHandlerURLCreator) http.HandlerFunc 
 			w.Write([]byte("Bad request"))
 			return
 		}
-		key, _ := db.CreateURL(string(body))
+
+		var cookie *http.Cookie
+		cookie, err = r.Cookie("token")
+		if err != nil || !helpers.ValidateToken(cookie) {
+			cookie = helpers.CreateToken()
+		}
+		uuid := helpers.GetUUIDFromToken(cookie.Value)
+
+		key, _ := db.CreateURL(uuid, string(body))
 		w.WriteHeader(http.StatusCreated)
 		w.Write([]byte(fmt.Sprintf("%s/%s", cfg.BaseURL, key)))
 	}

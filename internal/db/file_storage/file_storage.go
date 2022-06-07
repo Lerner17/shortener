@@ -8,13 +8,16 @@ import (
 	"io/ioutil"
 	"os"
 
+	"github.com/Lerner17/shortener/internal/config"
 	"github.com/Lerner17/shortener/internal/helpers"
+	"github.com/Lerner17/shortener/internal/models"
 )
 
 // var _ URLStorage = &fileStorage{}
+var cfg *config.Config = config.GetConfig()
 
 type fileStorage struct {
-	state  map[string]string
+	state  map[string]map[string]string
 	file   *os.File
 	writer *bufio.Writer
 }
@@ -25,12 +28,12 @@ func NewFileStorage(dbPath string) *fileStorage {
 		panic(fmt.Sprintf("Cannot open db file: %v", err))
 	}
 
-	var data map[string]string
+	var data map[string]map[string]string
 
 	byteValue, _ := ioutil.ReadAll(file)
 	err = json.Unmarshal(byteValue, &data)
 	if err != nil {
-		data = make(map[string]string)
+		data = make(map[string]map[string]string)
 	}
 
 	fmt.Println(data)
@@ -47,11 +50,24 @@ func (fs *fileStorage) Close() error {
 	return fs.file.Close()
 }
 
-func (fs *fileStorage) GetURL(shortURL string) (string, bool) {
-	if result, ok := fs.state[shortURL]; ok {
+func (fs *fileStorage) GetURL(uuid string, shortURL string) (string, bool) {
+	userState := fs.state[uuid]
+	if result, ok := userState[shortURL]; ok {
 		return result, ok
 	}
 	return "", false
+}
+
+func (fs *fileStorage) GetUserURLs(uuid string) models.URLs {
+	rawUrls := fs.state[uuid]
+	var urls models.URLs
+	for k, v := range rawUrls {
+		urls = append(urls, models.URL{
+			ShortURL:    fmt.Sprintf("%s/%s", cfg.BaseURL, k),
+			OriginalURL: v,
+		})
+	}
+	return urls
 }
 
 func (fs *fileStorage) getUniqueID() string {
@@ -81,12 +97,20 @@ func (fs *fileStorage) writeState() error {
 	return fs.writer.Flush()
 }
 
-func (fs *fileStorage) CreateURL(fullURL string) (string, string) {
-	key := fs.getUniqueID()
-	fs.state[key] = fullURL
+func (fs *fileStorage) CreateURL(uuid string, fullURL string) (string, string) {
+	urls := make(map[string]string)
+
+	_, ok := fs.state[uuid]
+	if ok {
+		urls = fs.state[uuid]
+	}
+
+	uniqueID := fs.getUniqueID()
+	urls[uniqueID] = fullURL
+	fs.state[uuid] = urls
 	err := fs.writeState()
 	if err != nil {
 		fmt.Printf("Cannot write state to file: %v\n", err)
 	}
-	return key, fullURL
+	return uniqueID, fullURL
 }
