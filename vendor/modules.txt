@@ -1,0 +1,42 @@
+# github.com/alexflint/go-arg v1.4.3
+## explicit; go 1.13
+# github.com/alexflint/go-scalar v1.1.0
+## explicit; go 1.15
+# github.com/caarlos0/env/v6 v6.9.2
+## explicit; go 1.17
+github.com/caarlos0/env/v6
+# github.com/davecgh/go-spew v1.1.1
+## explicit
+github.com/davecgh/go-spew/spew
+# github.com/go-chi/chi/v5 v5.0.7
+## explicit; go 1.14
+github.com/go-chi/chi/v5
+github.com/go-chi/chi/v5/middleware
+# github.com/google/uuid v1.3.0
+## explicit
+github.com/google/uuid
+# github.com/pmezard/go-difflib v1.0.0
+## explicit
+github.com/pmezard/go-difflib/difflib
+# github.com/stretchr/testify v1.8.0
+## explicit; go 1.13
+github.com/stretchr/testify/assert
+github.com/stretchr/testify/require
+# go.uber.org/atomic v1.10.0
+## explicit; go 1.18
+go.uber.org/atomic
+# go.uber.org/multierr v1.8.0
+## explicit; go 1.14
+go.uber.org/multierr
+# go.uber.org/zap v1.23.0
+## explicit; go 1.18
+go.uber.org/zap
+go.uber.org/zap/buffer
+go.uber.org/zap/internal
+go.uber.org/zap/internal/bufferpool
+go.uber.org/zap/internal/color
+go.uber.org/zap/internal/exit
+go.uber.org/zap/zapcore
+# gopkg.in/yaml.v3 v3.0.1
+## explicit
+gopkg.in/yaml.v3
