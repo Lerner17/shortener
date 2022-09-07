@@ -6,12 +6,8 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # PARTICULAR PURPOSE.
 
 # This program built for i386-apple-darwin11.3.0
- 
-make: *** No rule to make target `all'
-.  Stop.
 
-
-# Make data base, printed on Mon Sep  5 21:41:16 2022
+# Make data base, printed on Wed Sep  7 16:50:59 2022
 
 # Variables
 
@@ -38,11 +34,11 @@ CURDIR := /Users/lerner/Documents/yandex/shortener
 # makefile
 SHELL = /bin/sh
 # environment
-VSCODE_NLS_CONFIG = {"locale":"ru","availableLanguages":{"*":"ru"},"_languagePackId":"e2673fac9b3b0beb38d486c37331d2f9.ru","_translationsConfigFile":"/Users/lerner/Library/Application Support/Code/clp/e2673fac9b3b0beb38d486c37331d2f9.ru/tcf.json","_cacheRoot":"/Users/lerner/Library/Application Support/Code/clp/e2673fac9b3b0beb38d486c37331d2f9.ru","_resolvedLanguagePackCoreLocation":"/Users/lerner/Library/Application Support/Code/clp/e2673fac9b3b0beb38d486c37331d2f9.ru/784b0177c56c607789f9638da7b6bf3230d47a8c","_corruptedFile":"/Users/lerner/Library/Application Support/Code/clp/e2673fac9b3b0beb38d486c37331d2f9.ru/corrupted.info","_languagePackSupport":true}
+VSCODE_NLS_CONFIG = {"locale":"ru","availableLanguages":{"*":"ru"},"_languagePackId":"3336b4f881aefc9e2340c398e06e2a31.ru","_translationsConfigFile":"/Users/lerner/Library/Application Support/Code/clp/3336b4f881aefc9e2340c398e06e2a31.ru/tcf.json","_cacheRoot":"/Users/lerner/Library/Application Support/Code/clp/3336b4f881aefc9e2340c398e06e2a31.ru","_resolvedLanguagePackCoreLocation":"/Users/lerner/Library/Application Support/Code/clp/3336b4f881aefc9e2340c398e06e2a31.ru/784b0177c56c607789f9638da7b6bf3230d47a8c","_corruptedFile":"/Users/lerner/Library/Application Support/Code/clp/3336b4f881aefc9e2340c398e06e2a31.ru/corrupted.info","_languagePackSupport":true}
 # environment
 _ = /usr/bin/make
 # environment
-VSCODE_PID = 55555
+VSCODE_PID = 20275
 # makefile
 MAKEFILE_LIST := 
 # environment
@@ -87,7 +83,6 @@ SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.24LWUpCC6u/Listeners
 %F = $(notdir $%)
 # environment
 rvm_bin_path = /Users/lerner/.rvm/bin
- 
 # environment
 PWD = /Users/lerner/Documents/yandex/shortener
 # environment
@@ -145,7 +140,7 @@ USER = lerner
 # makefile
 .DEFAULT_GOAL := 
 # environment
-TERM_SESSION_ID = 1598D296-BC97-48A4-B27E-CBA2000B08BB
+TERM_SESSION_ID = 925E898C-455E-4688-B20E-6C64742461DC
 # environment
 rvm_version = 1.29.12-next (master)
 # environment
@@ -177,7 +172,7 @@ TERM_PROGRAM_VERSION = 440
 # environment
 NVM_DIR = /Users/lerner/.nvm
 # environment
-XPC_SERVICE_NAME = application.com.microsoft.VSCode.28859730.28859736.7EE3EF47-993A-4240-86CA-3B4021DF65CC
+XPC_SERVICE_NAME = application.com.microsoft.VSCode.28859730.28859736.B9B69555-769B-49BE-97E9-C870303D14A3
 # automatic
 +D = $(patsubst %/,%,$(dir $+))
 # automatic
@@ -235,9 +230,9 @@ rvm_nightly_flag =
 
 # Directories
 
-# . (device 16777221, inode 18119446): 14 files, no impossibilities.
+# . (device 16777221, inode 18119446): 15 files, no impossibilities.
 
-# 14 files, no impossibilities in 1 directories.
+# 15 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -249,7 +244,6 @@ rvm_nightly_flag =
 all:
 #  Command-line target.
 #  Implicit rule search has been done.
- 
 #  File does not exist.
 #  File has not been updated.
 # variable set hash-table stats:
@@ -308,8 +302,11 @@ GNUmakefile:
 # # of strings in strcache: 0
 # # of strcache buffers: 0
 # strcache size: total = 0 / max = 0 / min = 4096 / avg = 0
+ 
+make: *** No rule to make target `all'.  Stop.
+
 # strcache free: total = 0 / max = 0 / min = 4096 / avg = 0
 
-# Finished Make data base on Mon Sep  5 21:41:16 2022
+# Finished Make data base on Wed Sep  7 16:50:59 2022
 
  
