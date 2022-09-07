@@ -27,8 +27,13 @@ func UserURLsAPIHandler(db URLListGetter) http.HandlerFunc {
 			w.Write([]byte(`{"error": "Cannot serialize struct to JSON"}`))
 			return
 		}
+
+		if len(urlsList) == 0 {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
 		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
+		// w.WriteHeader(http.StatusOK)
 		w.Write([]byte(serializedResponse))
 
 	}
