@@ -17,7 +17,7 @@ func init() {
 		panic(errors.New("DB error"))
 	}
 
-	inst, err := sql.Open("pgx", dsn+"?sslmode=disable")
+	inst, err := sql.Open("pgx", dsn)
 	if err != nil {
 		panic(err)
 	}
