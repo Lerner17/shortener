@@ -15,10 +15,6 @@ import (
 	"github.com/Lerner17/shortener/internal/routes"
 )
 
-func getDBorMemDB() {
-
-}
-
 func main() {
 	r := routes.NewRouter()
 	cfg := config.GetConfig()

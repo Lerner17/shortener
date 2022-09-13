@@ -33,7 +33,6 @@ func UserURLsAPIHandler(db URLListGetter) http.HandlerFunc {
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		// w.WriteHeader(http.StatusOK)
 		w.Write([]byte(serializedResponse))
 
 	}

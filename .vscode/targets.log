@@ -7,7 +7,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 
 # This program built for i386-apple-darwin11.3.0
 
-# Make data base, printed on Wed Sep  7 16:50:59 2022
+# Make data base, printed on Tue Sep 13 13:35:41 2022
 
 # Variables
 
@@ -20,17 +20,25 @@ RUBY_VERSION = ruby-2.7.0
 # environment
 ELECTRON_NO_ATTACH_CONSOLE = 1
 # environment
+REDIS_DB = 0
+# environment
 NVM_INC = /Users/lerner/.nvm/versions/node/v14.0.0/include/node
 # automatic
 ?D = $(patsubst %/,%,$(dir $?))
+# environment
+CLICK_HOUSE_LOGS_USER = rouser
 # environment
 rvm_path = /Users/lerner/.rvm
 # automatic
 @D = $(patsubst %/,%,$(dir $@))
 # automatic
 @F = $(notdir $@)
+# default
+MAKE_VERSION := 3.81
 # makefile
 CURDIR := /Users/lerner/Documents/yandex/shortener
+# environment
+ALLOWED_HOSTS = api-dsh-dev2.interneturok.ru, api-dsh-dev1.interneturok.ru, localhost, 127.0.0.1
 # makefile
 SHELL = /bin/sh
 # environment
@@ -38,9 +46,15 @@ VSCODE_NLS_CONFIG = {"locale":"ru","availableLanguages":{"*":"ru"},"_languagePac
 # environment
 _ = /usr/bin/make
 # environment
-VSCODE_PID = 20275
+VSCODE_PID = 12128
+# environment
+CLICK_HOUSE_COUNTER_HOST = c-c9q1mgdu9dbnha4ga9e4.ro.mdb.yandexcloud.net
 # makefile
 MAKEFILE_LIST := 
+# environment
+IU_DATABASE_USER = interneturok_st
+# environment
+PSP_PASSWORD = cS562UGsGtikQvCK
 # environment
 VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
 # environment
@@ -48,9 +62,15 @@ rvm_ruby_mode =
 # environment
 rvm_ruby_make = 
 # environment
+IU_DATABASE_NAME = iu_staging
+# environment
 __CFBundleIdentifier = com.microsoft.VSCode
 # environment
+CLICK_HOUSE_AGGPROD_DATABASE = aggprod
+# environment
 rvm_proxy = 
+# environment
+CLICK_HOUSE_LOGS_HOST = c-c9qrr7h8ca4gujio2lta.rw.mdb.yandexcloud.net
 # environment
 VSCODE_CWD = /Users/lerner/Documents/yandex/shortener
 # environment
@@ -58,11 +78,19 @@ GOPROXY = https://proxy.golang.org,direct
 # environment
 rvm_pretty_print_flag = 
 # environment
-PATH = /Users/lerner/.rvm/gems/ruby-2.7.0/bin:/Users/lerner/.rvm/gems/ruby-2.7.0@global/bin:/Users/lerner/.rvm/rubies/ruby-2.7.0/bin:/Users/lerner/.nvm/versions/node/v14.0.0/bin:/usr/local/go/bin:/usr/local/opt/openjdk@17/bin:/usr/local/opt/openjdk@11/bin:/usr/local/opt/openjdk@11/bin:/Library/Frameworks/Python.framework/Versions/3.6/bin:/Library/Frameworks/Python.framework/Versions/3.9/bin:/Library/Frameworks/Python.framework/Versions/3.10/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin:/Users/lerner/.cargo/bin:/Users/lerner/development/flutter/bin:/Users/lerner/.rvm/bin
+PATH = /Users/lerner/.nvm/versions/node/v14.0.0/bin:/usr/local/go/bin:/Users/lerner/go/bin:/usr/local/opt/openjdk@17/bin:/usr/local/opt/openjdk@11/bin:/usr/local/opt/openjdk@11/bin:/Library/Frameworks/Python.framework/Versions/3.6/bin:/Library/Frameworks/Python.framework/Versions/3.9/bin:/Library/Frameworks/Python.framework/Versions/3.10/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin:/Users/lerner/.cargo/bin:/Users/lerner/development/flutter/bin:/Users/lerner/.rvm/bin
 # environment
 LSCOLORS = Gxfxcxdxbxegedabagacad
 # environment
 rvm_niceness = 
+# environment
+EGE_PASSWORD = aNgo6aeSeicheche
+# environment
+PSP_USER = psp
+# environment
+CLICK_HOUSE_AGGPROD_PASSWORD = SaAs2AlNq9AI7W9p7t
+# environment
+IU_DATABASE_HOST = 95.163.250.253
 # environment
 GOPATH = /Users/lerner/go
 # environment
@@ -70,33 +98,59 @@ NVM_BIN = /Users/lerner/.nvm/versions/node/v14.0.0/bin
 # environment
 rvm_only_path_flag = 
 # environment
+IU_DATABASE_PORT = 3306
+# environment
+PSP_NAME = test1psp
+# environment
 rvm_gemstone_package_file = 
 # environment
 ELECTRON_RUN_AS_NODE = 1
+# environment
+RSS_TELEGRAM_BOT_TOKEN = 5318602138:AAEhUoPtN4GIb3ZXv53aHdfQ0v5BCb1HjC0
 # environment
 rvm_alias_expanded = 
 # default
 .FEATURES := target-specific order-only second-expansion else-if archives jobserver check-symlink
 # environment
-SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.24LWUpCC6u/Listeners
+SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.sF9TL3cEaS/Listeners
 # automatic
 %F = $(notdir $%)
+# environment
+CLICK_HOUSE_DATABASE = dashboards
+# environment
+EGE_USER = dev01uege
 # environment
 rvm_bin_path = /Users/lerner/.rvm/bin
 # environment
 PWD = /Users/lerner/Documents/yandex/shortener
 # environment
+WORKER_COUNT = 4
+# environment
+API_URL = http://localhost:8000/api/v1/
+# environment
 GEM_HOME = /Users/lerner/.rvm/gems/ruby-2.7.0
 # environment
+ALLOWED_CORS = http://localhost:3000
+# environment
 rvm_docs_type = 
+# environment
+PSP_HOST = rc1a-bkwv672v0rt9tocn.mdb.yandexcloud.net
 # environment
 rvm_script_name = 
 # environment
 ORIGINAL_XDG_CURRENT_DESKTOP = undefined
 # environment
+REDIS_PORT = 6379
+# environment
+EGE_NAME = dev01_ege_1
+# environment
+PSP_PORT = 6432
+# environment
 GOMODCACHE = /Users/lerner/go/pkg/mod
 # environment
 HOME = /Users/lerner
+# environment
+CLICK_HOUSE_PASSWORD = j3b6vs92ntguj
 # default
 MAKEFILEPATH := /Applications/Xcode.app/Contents/Developer/Makefiles
 # environment
@@ -110,6 +164,8 @@ APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
 # environment
 NVM_CD_FLAGS = -q
 # environment
+MAIN_URL = localhost:3000
+# environment
 ZSH = /Users/lerner/.oh-my-zsh
 # environment
 VSCODE_HANDLES_UNCAUGHT_ERRORS = true
@@ -120,11 +176,15 @@ rvm_ruby_bits =
 # environment
 GEM_PATH = /Users/lerner/.rvm/gems/ruby-2.7.0:/Users/lerner/.rvm/gems/ruby-2.7.0@global
 # environment
+rvm_nightly_flag = 
+# environment
 XPC_FLAGS = 0x0
 # environment
 rvm_ruby_make_install = 
 # default
 MAKE = $(MAKE_COMMAND)
+# environment
+RSS_TELEGRAM_BOT_USERNAME = iu_rnd_db_dev_bot
 # default
 MAKECMDGOALS := all
 # environment
@@ -133,22 +193,38 @@ IRBRC = /Users/lerner/.rvm/rubies/ruby-2.7.0/.irbrc
 SHLVL = 3
 # environment
 rvm_quiet_flag = 
-# default
-MAKE_VERSION := 3.81
+# environment
+EGE_HOST = 95.163.250.253
+# environment
+CLICK_HOUSE_AGGPROD_HOST = c-c9qrr7h8ca4gujio2lta.rw.mdb.yandexcloud.net
+# environment
+BASE_URL = /
 # environment
 USER = lerner
+# environment
+EGE_PORT = 3306
 # makefile
 .DEFAULT_GOAL := 
 # environment
-TERM_SESSION_ID = 925E898C-455E-4688-B20E-6C64742461DC
+CLICK_HOUSE_USER = i_polennikov
+# environment
+TERM_SESSION_ID = 049C43C9-05CB-4E91-94EC-1333464F0204
+# environment
+APP_STAND = prod
+# environment
+TIMEOUT = 600
 # environment
 rvm_version = 1.29.12-next (master)
 # environment
 LESS = -R
 # automatic
 %D = $(patsubst %/,%,$(dir $%))
-# default
-MAKE_COMMAND := /Applications/Xcode.app/Contents/Developer/usr/bin/make
+# environment
+REDIS_PASSWORD = 
+# environment
+CLICK_HOUSE_AGGPROD_USER = rouser
+# environment
+PORT = 8000
 # environment
 TERM_PROGRAM = Apple_Terminal
 # default
@@ -161,8 +237,12 @@ TMPDIR = /var/folders/59/5hq7y01s1zsg7tp1xyg6yf3r0000gn/T/
 VSCODE_IPC_HOOK = /Users/lerner/Library/Application Support/Code/1.71.0-main.sock
 # environment
 MallocNanoZone = 0
+# environment
+TELEGRAM_UNSUBSCRIBE_URL = https://dsh-dev1.interneturok.ru/unsubscribe/
 # makefile
 MAKEFLAGS = Rrqp
+# environment
+CLICK_HOUSE_COUNTER_DATABASE = aggdev1
 # environment
 MFLAGS = -Rrqp
 # automatic
@@ -172,21 +252,31 @@ TERM_PROGRAM_VERSION = 440
 # environment
 NVM_DIR = /Users/lerner/.nvm
 # environment
-XPC_SERVICE_NAME = application.com.microsoft.VSCode.28859730.28859736.B9B69555-769B-49BE-97E9-C870303D14A3
+XPC_SERVICE_NAME = application.com.microsoft.VSCode.28859730.28859736.D5FD40BC-5CC4-408E-8DBB-9693687EDAF1
 # automatic
 +D = $(patsubst %/,%,$(dir $+))
 # automatic
 +F = $(notdir $+)
 # environment
+REDIS_HOST = localhost
+# environment
 rvm_sdk = 
+# default
+MAKE_COMMAND := /Applications/Xcode.app/Contents/Developer/usr/bin/make
 # environment
 __CF_USER_TEXT_ENCODING = 0x1F5:0x7:0x31
 # environment
-COMMAND_MODE = unix2003
+CLICK_HOUSE_HOST = rc1a-6hjsrs5yig1qpea8.mdb.yandexcloud.net
+# environment
+LANGUAGE_CODE = ru-ru
 # default
 MAKEFILES := 
+# environment
+CLICK_HOUSE_COUNTER_PASSWORD = DR2YQx4caEgwf9lkL3HGpzZPdt
 # automatic
 <F = $(notdir $<)
+# environment
+CLICK_HOUSE_LOGS_DATABASE = logs
 # environment
 rvm_silent_flag = 
 # environment
@@ -204,11 +294,24 @@ rvm_prefix = /Users/lerner
 # default
 SUFFIXES := 
 # environment
+TIME_ZONE = UTC
+# environment
+CLICK_HOUSE_LOGS_PASSWORD = SaAs2AlNq9AI7W9p7t
+# environment
 rvm_ruby_file = 
 # default
 .INCLUDE_DIRS = /usr/local/include
+ 
+make: *** No rule to make target `all'.  Stop.
+
 # environment
 MAKELEVEL := 0
+# environment
+CLICK_HOUSE_COUNTER_USER = agg
+# environment
+COUNTER_URL = https://api-dev1-cnt.interneturok.ru/counter
+# environment
+SECRET_KEY = asd
 # environment
 LANG = C
 # environment
@@ -220,9 +323,13 @@ rvm_hook =
 # environment
 MY_RUBY_HOME = /Users/lerner/.rvm/rubies/ruby-2.7.0
 # environment
-rvm_nightly_flag = 
+HOST = 0.0.0.0
+# environment
+COMMAND_MODE = unix2003
+# environment
+IU_DATABASE_PASSWORD = Eihieyeeso4AxoL6
 # variable set hash-table stats:
-# Load=105/1024=10%, Rehash=0, Collisions=8/126=6%
+# Load=157/1024=15%, Rehash=0, Collisions=19/178=11%
 
 # Pattern-specific Variable Values
 
@@ -230,9 +337,9 @@ rvm_nightly_flag =
 
 # Directories
 
-# . (device 16777221, inode 18119446): 15 files, no impossibilities.
+# . (device 16777223, inode 18119446): 18 files, no impossibilities.
 
-# 15 files, no impossibilities in 1 directories.
+# 18 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -302,11 +409,8 @@ GNUmakefile:
 # # of strings in strcache: 0
 # # of strcache buffers: 0
 # strcache size: total = 0 / max = 0 / min = 4096 / avg = 0
- 
-make: *** No rule to make target `all'.  Stop.
-
 # strcache free: total = 0 / max = 0 / min = 4096 / avg = 0
 
-# Finished Make data base on Wed Sep  7 16:50:59 2022
+# Finished Make data base on Tue Sep 13 13:35:41 2022
 
  

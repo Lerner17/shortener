@@ -22,5 +22,6 @@ func NewRouter() chi.Router {
 	r.Get("/api/user/urls", UserURLsAPIHandler(db))
 	r.Get("/{urlID}", RedirectHandler(db))
 	r.Post("/", CreateShortURLHandler(db))
+	r.Get("/ping", PingHandler())
 	return r
 }
