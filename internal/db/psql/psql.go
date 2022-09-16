@@ -2,7 +2,8 @@ package psql
 
 import (
 	"database/sql"
-	"errors"
+	"fmt"
+	"os"
 
 	"github.com/Lerner17/shortener/internal/config"
 	"github.com/Lerner17/shortener/internal/logger"
@@ -14,7 +15,7 @@ var Instance *sql.DB
 func init() {
 	dsn := config.GetConfig().DatabaseDsn
 	if dsn == "" {
-		panic(errors.New("DB error"))
+		fmt.Fprint(os.Stderr, "Cannot connect to database")
 	}
 
 	inst, err := sql.Open("pgx", dsn)
