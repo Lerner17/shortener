@@ -47,8 +47,32 @@ func (d *Database) CreateURL(uuid string, fullURL string) (string, string) {
 
 }
 
-func (d *Database) GetUserURLs(string) models.URLs {
-	return models.URLs{}
+func (d *Database) GetUserURLs(uuid string) models.URLs {
+
+	urls := make(models.URLs, 0)
+	ctx := context.Background()
+	query := "SELECT full_url, short_url FROM short_links WHERE user_session = $1;"
+
+	rows, err := d.cursor.QueryContext(ctx, query, uuid)
+
+	if err != nil {
+		logger.Error("Failed to get URL from database", zap.Error(err), zap.String("uuid", uuid))
+		return urls
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var u models.URL
+
+		err = rows.Scan(&u.OriginalURL, &u.ShortURL)
+
+		if err != nil {
+			return urls
+		}
+		urls = append(urls, u)
+	}
+
+	return urls
 }
 
 func NewPostgres() *Database {
