@@ -8,7 +8,7 @@ import (
 
 func PingHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		conn := psql.Instance
+		conn := psql.GetInstance()
 		if err := conn.Ping(); err == nil {
 			w.WriteHeader(http.StatusOK)
 

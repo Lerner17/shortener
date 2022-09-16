@@ -55,3 +55,11 @@ func Info(msg string, fields ...zap.Field) {
 		l.Info(msg, fields...)
 	}
 }
+
+func Error(msg string, fields ...zap.Field) {
+	// Init logger instance
+	l, err := Instance()
+	if err == nil {
+		l.Error(msg, fields...)
+	}
+}
