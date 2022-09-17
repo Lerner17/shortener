@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/Lerner17/shortener/internal/config"
@@ -45,6 +46,56 @@ func (d *Database) CreateURL(uuid string, fullURL string) (string, string) {
 	}
 	return shortURL, fullURL
 
+}
+
+func (d *Database) CreateBatchURL(uuid string, urls models.BatchURLs) (models.BatchShortURLs, error) {
+	result := make(models.BatchShortURLs, 0)
+	cfg := config.GetConfig()
+	tx, err := d.cursor.Begin()
+
+	if err != nil {
+		return result, err
+	}
+	defer func(tx *sql.Tx) {
+		_ = tx.Rollback()
+	}(tx)
+
+	stmt, err := tx.PrepareContext(context.Background(), `
+		INSERT INTO
+			short_links(
+				full_url,
+				correlation_id,
+				short_url,
+				user_session
+			) VALUES($1, $2, $3, $4)`)
+	if err != nil {
+		fmt.Println("PrepareContext ", err)
+		return result, err
+	}
+	defer func(stmt *sql.Stmt) {
+		err := stmt.Close()
+		if err != nil {
+			logger.Info("Close statement error", zap.Error(err))
+		}
+	}(stmt)
+
+	for _, u := range urls {
+		shortURL := d.getUniqueID()
+		if _, err := stmt.ExecContext(context.Background(), u.OriginalURL, u.CorrelationId, shortURL, uuid); err == nil {
+			result = append(result, models.BatchShortURL{
+				CorrelationId: u.CorrelationId,
+				ShortURL:      fmt.Sprintf("%s/%s", cfg.BaseURL, shortURL),
+			})
+		} else {
+			fmt.Println("ExecContext ", err.Error())
+			return result, err
+		}
+	}
+	err = tx.Commit()
+	if err != nil {
+		log.Fatalf("Failed to commit! Panic! %v", err)
+	}
+	return result, nil
 }
 
 func (d *Database) GetUserURLs(uuid string) models.URLs {
@@ -94,6 +145,8 @@ func (d *Database) Migrate() {
 			full_url TEXT NOT NULL,
 			user_session UUID
 		);
+
+		ALTER TABLE short_links ADD COLUMN IF NOT EXISTS  correlation_id VARCHAR(255) null;
 	`
 	logger.Info("Try to make migration", zap.String("query", query))
 	_, err := d.cursor.ExecContext(context, query)
