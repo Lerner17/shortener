@@ -156,6 +156,7 @@ func (d *Database) Migrate() {
 		);
 
 		ALTER TABLE short_links ADD COLUMN IF NOT EXISTS  correlation_id VARCHAR(255) null;
+		alter table short_links ADD UNIQUE (user_session, full_url);
 	`
 	logger.Info("Try to make migration", zap.String("query", query))
 	_, err := d.cursor.ExecContext(context, query)
@@ -169,8 +170,8 @@ func (d *Database) GetURL(uuid string, shortURL string) (string, bool) {
 
 	var url string
 
-	query := "SELECT full_url FROM short_links WHERE user_session = $1 AND short_url = $2"
-	err := d.cursor.QueryRow(query, uuid, shortURL).Scan(&url)
+	query := "SELECT full_url FROM short_links WHERE short_url = $2"
+	err := d.cursor.QueryRow(query, shortURL).Scan(&url)
 	if err != nil {
 		logger.Error("Failed to get URL from database", zap.Error(err), zap.String("shortURL", shortURL), zap.String("uuid", uuid))
 		return "", false
