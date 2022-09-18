@@ -1,15 +1,17 @@
 package routes
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
 
 	"github.com/Lerner17/shortener/internal/config"
+	er "github.com/Lerner17/shortener/internal/errors"
 )
 
 type CreateShortURLHandlerURLCreator interface {
-	CreateURL(string, string) (string, string)
+	CreateURL(string, string) (string, string, error)
 }
 
 func CreateShortURLHandler(db CreateShortURLHandlerURLCreator) http.HandlerFunc {
@@ -28,7 +30,17 @@ func CreateShortURLHandler(db CreateShortURLHandlerURLCreator) http.HandlerFunc 
 			w.Write([]byte("Bad request"))
 			return
 		}
-		key, _ := db.CreateURL(session, string(body))
+		key, _, err := db.CreateURL(session, string(body))
+
+		if err != nil {
+			if errors.Is(err, er.ErrorShortLinkAlreadyExists) {
+				http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
+				return
+			}
+			http.Error(w, http.StatusText(http.StatusUnprocessableEntity), http.StatusUnprocessableEntity)
+			return
+		}
+
 		w.WriteHeader(http.StatusCreated)
 		w.Write([]byte(fmt.Sprintf("%s/%s", cfg.BaseURL, key)))
 	}

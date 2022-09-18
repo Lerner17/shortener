@@ -2,10 +2,12 @@ package routes
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 
 	"github.com/Lerner17/shortener/internal/config"
+	er "github.com/Lerner17/shortener/internal/errors"
 	"github.com/Lerner17/shortener/internal/logger"
 )
 
@@ -18,7 +20,7 @@ type ShortenResponse struct {
 }
 
 type URLCreator interface {
-	CreateURL(string, string) (string, string)
+	CreateURL(string, string) (string, string, error)
 }
 
 func ShortenerAPIHandler(db URLCreator) http.HandlerFunc {
@@ -46,7 +48,16 @@ func ShortenerAPIHandler(db URLCreator) http.HandlerFunc {
 			return
 		}
 
-		key, _ := db.CreateURL(session, body.URL)
+		key, _, err := db.CreateURL(session, body.URL)
+
+		if err != nil {
+			if errors.Is(err, er.ErrorShortLinkAlreadyExists) {
+				http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
+				return
+			}
+			http.Error(w, http.StatusText(http.StatusUnprocessableEntity), http.StatusUnprocessableEntity)
+			return
+		}
 
 		response := &ShortenResponse{
 			Result: fmt.Sprintf("%s/%s", cfg.BaseURL, key),

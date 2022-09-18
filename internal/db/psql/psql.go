@@ -3,14 +3,18 @@ package psql
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 	"os"
 
 	"github.com/Lerner17/shortener/internal/config"
+	er "github.com/Lerner17/shortener/internal/errors"
 	"github.com/Lerner17/shortener/internal/helpers"
 	"github.com/Lerner17/shortener/internal/logger"
 	"github.com/Lerner17/shortener/internal/models"
+	"github.com/jackc/pgconn"
+	"github.com/jackc/pgerrcode"
 	_ "github.com/jackc/pgx/v4/stdlib"
 	"go.uber.org/zap"
 )
@@ -31,10 +35,10 @@ func (d *Database) getUniqueID() string {
 	return helpers.StringWithCharset(7)
 }
 
-func (d *Database) CreateURL(uuid string, fullURL string) (string, string) {
+func (d *Database) CreateURL(uuid string, fullURL string) (string, string, error) {
 	ctx := context.Background()
 	shortURL := d.getUniqueID()
-	query := "INSERT INTO short_links(short_url, full_url, user_session) VALUES($1, $2, $3) returning id"
+	query := "INSERT INTO short_links(short_url, full_url, user_session) VALUES($1, $2, $3)"
 	logger.Info(
 		"Try to insert URL into table",
 		zap.String("shortURL", shortURL),
@@ -43,8 +47,13 @@ func (d *Database) CreateURL(uuid string, fullURL string) (string, string) {
 	_, err := d.cursor.ExecContext(ctx, query, shortURL, fullURL, uuid)
 	if err != nil {
 		logger.Error("Cannot insert to table", zap.Error(err))
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgerrcode.UniqueViolation {
+			return shortURL, fullURL, er.ErrorShortLinkAlreadyExists
+		}
+		return shortURL, fullURL, err
 	}
-	return shortURL, fullURL
+	return shortURL, fullURL, nil
 
 }
 
