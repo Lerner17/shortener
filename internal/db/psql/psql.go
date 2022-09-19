@@ -183,7 +183,7 @@ func (d *Database) GetURL(shortURL string) (string, bool) {
 
 	var url string
 
-	query := "SELECT full_url FROM short_links WHERE short_url = $2"
+	query := "SELECT full_url FROM short_links WHERE short_url = $1"
 	err := d.cursor.QueryRow(query, shortURL).Scan(&url)
 	if err != nil {
 		logger.Error("Failed to get URL from database", zap.Error(err), zap.String("shortURL", shortURL))
