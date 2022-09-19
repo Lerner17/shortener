@@ -20,3 +20,10 @@ type BatchShortURL struct {
 }
 
 type BatchShortURLs []BatchShortURL
+
+type URLEntity struct {
+	OriginURL     string
+	ShortURL      string
+	UserSession   string
+	CorrelationID string
+}

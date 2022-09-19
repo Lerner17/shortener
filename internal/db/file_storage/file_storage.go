@@ -8,79 +8,16 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/Lerner17/shortener/internal/config"
 	"github.com/Lerner17/shortener/internal/helpers"
+	"github.com/Lerner17/shortener/internal/logger"
 	"github.com/Lerner17/shortener/internal/models"
+	"go.uber.org/zap"
 )
 
-// var _ URLStorage = &fileStorage{}
-var cfg *config.Config = config.GetConfig()
-
 type fileStorage struct {
-	state  map[string]map[string]string
+	state  []models.URLEntity
 	file   *os.File
 	writer *bufio.Writer
-}
-
-func NewFileStorage(dbPath string) *fileStorage {
-	file, err := os.OpenFile(dbPath, os.O_RDWR|os.O_CREATE, 0777)
-	if err != nil {
-		panic(fmt.Sprintf("Cannot open db file: %v", err))
-	}
-
-	var data map[string]map[string]string
-
-	byteValue, _ := ioutil.ReadAll(file)
-	err = json.Unmarshal(byteValue, &data)
-	if err != nil {
-		data = make(map[string]map[string]string)
-	}
-
-	fmt.Println(data)
-
-	return &fileStorage{
-		state:  data,
-		file:   file,
-		writer: bufio.NewWriter(file),
-	}
-
-}
-
-func (fs *fileStorage) Close() error {
-	return fs.file.Close()
-}
-
-func (fs *fileStorage) GetURL(uuid string, shortURL string) (string, bool) {
-	userState := fs.state[uuid]
-	if result, ok := userState[shortURL]; ok {
-		return result, ok
-	}
-	return "", false
-}
-
-func (fs *fileStorage) GetUserURLs(uuid string) models.URLs {
-	rawUrls := fs.state[uuid]
-	var urls models.URLs
-	for k, v := range rawUrls {
-		urls = append(urls, models.URL{
-			ShortURL:    fmt.Sprintf("%s/%s", cfg.BaseURL, k),
-			OriginalURL: v,
-		})
-	}
-	return urls
-}
-
-func (fs *fileStorage) getUniqueID() string {
-	var uniqueID string
-	for {
-		randomCandidate := helpers.StringWithCharset(7)
-		if _, ok := fs.state[randomCandidate]; !ok {
-			uniqueID = randomCandidate
-			break
-		}
-	}
-
-	return uniqueID
 }
 
 func (fs *fileStorage) writeState() error {
@@ -97,20 +34,99 @@ func (fs *fileStorage) writeState() error {
 	return fs.writer.Flush()
 }
 
-func (fs *fileStorage) CreateURL(uuid string, fullURL string) (string, string) {
-	urls := make(map[string]string)
-
-	_, ok := fs.state[uuid]
-	if ok {
-		urls = fs.state[uuid]
+func NewFileStorage(dbPath string) *fileStorage {
+	file, err := os.OpenFile(dbPath, os.O_RDWR|os.O_CREATE, 0777)
+	if err != nil {
+		panic(fmt.Sprintf("Cannot open db file: %v", err))
 	}
 
-	uniqueID := fs.getUniqueID()
-	urls[uniqueID] = fullURL
-	fs.state[uuid] = urls
+	var data []models.URLEntity
+
+	byteValue, _ := ioutil.ReadAll(file)
+	err = json.Unmarshal(byteValue, &data)
+	if err != nil {
+		data = make([]models.URLEntity, 0)
+	}
+
+	return &fileStorage{
+		state:  data,
+		file:   file,
+		writer: bufio.NewWriter(file),
+	}
+
+}
+
+func (fs *fileStorage) Close() error {
+	return fs.file.Close()
+}
+
+func (fs *fileStorage) generateShortURL() string {
+	return helpers.StringWithCharset(7)
+}
+
+func (fs *fileStorage) CreateURL(uuid string, fullURL string) (string, string, error) {
+
+	key := fs.generateShortURL()
+
+	url := models.URLEntity{
+		OriginURL:     fullURL,
+		ShortURL:      key,
+		UserSession:   uuid,
+		CorrelationID: "",
+	}
+
+	fs.state = append(fs.state, url)
 	err := fs.writeState()
 	if err != nil {
-		fmt.Printf("Cannot write state to file: %v\n", err)
+		logger.Error("Cannot write state to file", zap.Error(err))
+		return key, fullURL, err
 	}
-	return uniqueID, fullURL
+
+	return key, fullURL, nil
+}
+
+func (fs *fileStorage) GetURL(uuid string, shortURL string) (string, bool) {
+	for _, u := range fs.state {
+		if u.UserSession == uuid && u.ShortURL == shortURL {
+			return u.OriginURL, true
+		}
+	}
+	return "", false
+}
+
+func (fs *fileStorage) GetUserURLs(uuid string) models.URLs {
+	result := make(models.URLs, 0)
+
+	for _, u := range fs.state {
+		if u.UserSession == uuid {
+			url := models.URL{
+				OriginalURL: u.OriginURL,
+				ShortURL:    u.ShortURL,
+			}
+			result = append(result, url)
+		}
+	}
+	return result
+}
+
+func (fs *fileStorage) CreateBatchURL(uuid string, urls models.BatchURLs) (models.BatchShortURLs, error) {
+	result := make(models.BatchShortURLs, 0)
+	for _, u := range urls {
+		shortURL := fs.generateShortURL()
+		fs.state = append(fs.state, models.URLEntity{
+			OriginURL:     u.OriginalURL,
+			ShortURL:      shortURL,
+			CorrelationID: u.CorrelationID,
+		})
+		result = append(result, models.BatchShortURL{
+			CorrelationID: u.CorrelationID,
+			ShortURL:      shortURL,
+		})
+		err := fs.writeState()
+		if err != nil {
+			logger.Error("Cannot write state to file", zap.Error(err))
+			return result, err
+		}
+	}
+	return result, nil
 }
