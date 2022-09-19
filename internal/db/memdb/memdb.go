@@ -1,118 +1,78 @@
 package memdb
 
 import (
-	"errors"
 	"fmt"
-	"sync"
 
 	"github.com/Lerner17/shortener/internal/config"
 	"github.com/Lerner17/shortener/internal/helpers"
 	"github.com/Lerner17/shortener/internal/models"
 )
 
-var lock = &sync.Mutex{}
-
-var cfg *config.Config = config.GetConfig()
+var DBInstance *memdb
+var cfg = config.GetConfig()
 
 type memdb struct {
-	state map[string]map[string]string
+	state []models.URLEntity
 }
-
-// {
-// 	data: {
-// 		uuid: {
-// 			short_url: value,
-// 			short_url: value,
-// 		}
-// 	}
-// }
-
-func (d *memdb) GetURL(uuid string, shortURL string) (string, bool) {
-	return d.Find(uuid, shortURL)
-}
-
-func (d *memdb) CreateURL(uuid string, fullURL string) (string, string) {
-	return d.Insert(uuid, fullURL)
-}
-
-func (d *memdb) GetUserURLs(uuid string) models.URLs {
-	rawUrls := d.state[uuid]
-	var urls models.URLs
-	for k, v := range rawUrls {
-		urls = append(urls, models.URL{
-			ShortURL:    fmt.Sprintf("%s/%s", cfg.BaseURL, k),
-			OriginalURL: v,
-		})
-	}
-	return urls
-}
-
-var dbInstance *memdb
 
 func init() {
-	dbInstance = &memdb{state: make(map[string]map[string]string)}
+	DBInstance = &memdb{state: make([]models.URLEntity, 0)}
 }
 
-func NewMemDB() *memdb {
-	us := GetInstance()
-	return us
+func (m *memdb) generateShortURL() string {
+	return helpers.StringWithCharset(7)
 }
 
-func (d *memdb) getUniqueID() string {
-	var uniqueID string
-	for {
-		randomCandidate := helpers.StringWithCharset(7)
-		if _, ok := d.state[randomCandidate]; !ok {
-			uniqueID = randomCandidate
-			break
-		}
+func (m *memdb) CreateURL(uuid string, fullURL string) (string, string, error) {
+	shortURL := m.generateShortURL()
+
+	u := models.URLEntity{
+		OriginURL:   fullURL,
+		ShortURL:    shortURL,
+		UserSession: uuid,
 	}
+	m.state = append(m.state, u)
 
-	return uniqueID
+	return shortURL, fullURL, nil
 }
 
-func GetInstance() *memdb {
-	if dbInstance == nil {
-		lock.Lock()
-		defer lock.Unlock()
-		if dbInstance == nil {
-			dbInstance = &memdb{}
+func (m *memdb) GetURL(shortURL string) (string, bool) {
+	for _, u := range m.state {
+		if u.ShortURL == shortURL {
+			return u.OriginURL, true
 		}
-	}
-	return dbInstance
-}
-
-func (d *memdb) Find(uuid string, key string) (string, bool) {
-	userState := d.state[uuid]
-
-	if result, ok := userState[key]; ok {
-		return result, ok
 	}
 	return "", false
 }
 
-func (d *memdb) InsertWithKey(uuid string, key, value string) (string, error) {
-	if key == "" || value == "" {
-		return "", errors.New("empty key or value")
+func (m *memdb) GetUserURLs(uuid string) models.URLs {
+	result := make(models.URLs, 0)
+
+	for _, u := range m.state {
+		if u.UserSession == uuid {
+			url := models.URL{
+				OriginalURL: u.OriginURL,
+				ShortURL:    fmt.Sprintf("%s/%s", cfg.BaseURL, u.ShortURL),
+			}
+			result = append(result, url)
+		}
 	}
-	url := make(map[string]string)
-	url[key] = value
-	d.state[uuid] = url
-	return value, nil
+	return result
 }
 
-func (d *memdb) Insert(uuid string, value string) (string, string) {
-
-	urls := make(map[string]string)
-
-	_, ok := d.state[uuid]
-	if ok {
-		urls = d.state[uuid]
+func (m *memdb) CreateBatchURL(uuid string, urls models.BatchURLs) (models.BatchShortURLs, error) {
+	result := make(models.BatchShortURLs, 0)
+	for _, u := range urls {
+		shortURL := m.generateShortURL()
+		m.state = append(m.state, models.URLEntity{
+			OriginURL:     u.OriginalURL,
+			ShortURL:      shortURL,
+			CorrelationID: u.CorrelationID,
+		})
+		result = append(result, models.BatchShortURL{
+			CorrelationID: u.CorrelationID,
+			ShortURL:      shortURL,
+		})
 	}
-
-	uniqueID := d.getUniqueID()
-	urls[uniqueID] = value
-	d.state[uuid] = urls
-
-	return uniqueID, d.state[uuid][uniqueID]
+	return result, nil
 }

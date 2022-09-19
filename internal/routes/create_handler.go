@@ -1,15 +1,17 @@
 package routes
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
 
 	"github.com/Lerner17/shortener/internal/config"
+	er "github.com/Lerner17/shortener/internal/errors"
 )
 
 type CreateShortURLHandlerURLCreator interface {
-	CreateURL(string, string) (string, string)
+	CreateURL(string, string) (string, string, error)
 }
 
 func CreateShortURLHandler(db CreateShortURLHandlerURLCreator) http.HandlerFunc {
@@ -18,7 +20,7 @@ func CreateShortURLHandler(db CreateShortURLHandlerURLCreator) http.HandlerFunc 
 		ctx := r.Context()
 		session, ok := ctx.Value("ctxSession").(string)
 		if !ok {
-			http.Error(w, http.StatusText(422), 422)
+			http.Error(w, http.StatusText(http.StatusUnprocessableEntity), http.StatusUnprocessableEntity)
 			return
 		}
 		defer r.Body.Close()
@@ -28,7 +30,19 @@ func CreateShortURLHandler(db CreateShortURLHandlerURLCreator) http.HandlerFunc 
 			w.Write([]byte("Bad request"))
 			return
 		}
-		key, _ := db.CreateURL(session, string(body))
+		key, _, err := db.CreateURL(session, string(body))
+
+		if err != nil {
+			if errors.Is(err, er.ErrorShortLinkAlreadyExists) {
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusConflict)
+				w.Write([]byte(fmt.Sprintf("%s/%s", cfg.BaseURL, key)))
+				return
+			}
+			http.Error(w, http.StatusText(http.StatusUnprocessableEntity), http.StatusUnprocessableEntity)
+			return
+		}
+
 		w.WriteHeader(http.StatusCreated)
 		w.Write([]byte(fmt.Sprintf("%s/%s", cfg.BaseURL, key)))
 	}

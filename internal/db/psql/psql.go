@@ -3,14 +3,18 @@ package psql
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 	"os"
 
 	"github.com/Lerner17/shortener/internal/config"
+	er "github.com/Lerner17/shortener/internal/errors"
 	"github.com/Lerner17/shortener/internal/helpers"
 	"github.com/Lerner17/shortener/internal/logger"
 	"github.com/Lerner17/shortener/internal/models"
+	"github.com/jackc/pgconn"
+	"github.com/jackc/pgerrcode"
 	_ "github.com/jackc/pgx/v4/stdlib"
 	"go.uber.org/zap"
 )
@@ -31,10 +35,20 @@ func (d *Database) getUniqueID() string {
 	return helpers.StringWithCharset(7)
 }
 
-func (d *Database) CreateURL(uuid string, fullURL string) (string, string) {
+func (d *Database) findShortURLFromDB(fullURL string, uuid string) (string, error) {
+	var url string
+	query := "SELECT short_url FROM short_links WHERE user_session = $1 AND full_url = $2"
+	err := d.cursor.QueryRow(query, uuid, fullURL).Scan(&url)
+	if err != nil {
+		return "", err
+	}
+	return url, nil
+}
+
+func (d *Database) CreateURL(uuid string, fullURL string) (string, string, error) {
 	ctx := context.Background()
 	shortURL := d.getUniqueID()
-	query := "INSERT INTO short_links(short_url, full_url, user_session) VALUES($1, $2, $3) returning id"
+	query := "INSERT INTO short_links(short_url, full_url, user_session) VALUES($1, $2, $3)"
 	logger.Info(
 		"Try to insert URL into table",
 		zap.String("shortURL", shortURL),
@@ -43,8 +57,18 @@ func (d *Database) CreateURL(uuid string, fullURL string) (string, string) {
 	_, err := d.cursor.ExecContext(ctx, query, shortURL, fullURL, uuid)
 	if err != nil {
 		logger.Error("Cannot insert to table", zap.Error(err))
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgerrcode.UniqueViolation {
+			query = "SELECT * FROM "
+			shortURL, err = d.findShortURLFromDB(fullURL, uuid)
+			if err != nil {
+				logger.Error("Cannot get short URL on conflict", zap.Error(err))
+			}
+			return shortURL, fullURL, er.ErrorShortLinkAlreadyExists
+		}
+		return shortURL, fullURL, err
 	}
-	return shortURL, fullURL
+	return shortURL, fullURL, nil
 
 }
 
@@ -56,9 +80,7 @@ func (d *Database) CreateBatchURL(uuid string, urls models.BatchURLs) (models.Ba
 	if err != nil {
 		return result, err
 	}
-	defer func(tx *sql.Tx) {
-		_ = tx.Rollback()
-	}(tx)
+	defer tx.Rollback()
 
 	stmt, err := tx.PrepareContext(context.Background(), `
 		INSERT INTO
@@ -72,18 +94,13 @@ func (d *Database) CreateBatchURL(uuid string, urls models.BatchURLs) (models.Ba
 		fmt.Println("PrepareContext ", err)
 		return result, err
 	}
-	defer func(stmt *sql.Stmt) {
-		err := stmt.Close()
-		if err != nil {
-			logger.Info("Close statement error", zap.Error(err))
-		}
-	}(stmt)
+	defer stmt.Close()
 
 	for _, u := range urls {
 		shortURL := d.getUniqueID()
-		if _, err := stmt.ExecContext(context.Background(), u.OriginalURL, u.CorrelationId, shortURL, uuid); err == nil {
+		if _, err := stmt.ExecContext(context.Background(), u.OriginalURL, u.CorrelationID, shortURL, uuid); err == nil {
 			result = append(result, models.BatchShortURL{
-				CorrelationId: u.CorrelationId,
+				CorrelationID: u.CorrelationID,
 				ShortURL:      fmt.Sprintf("%s/%s", cfg.BaseURL, shortURL),
 			})
 		} else {
@@ -108,6 +125,11 @@ func (d *Database) GetUserURLs(uuid string) models.URLs {
 
 	if err != nil {
 		logger.Error("Failed to get URL from database", zap.Error(err), zap.String("uuid", uuid))
+		return urls
+	}
+
+	if rows.Err() == nil {
+		logger.Error("Failed to get URL from database", zap.Error(rows.Err()), zap.String("uuid", uuid))
 		return urls
 	}
 	defer rows.Close()
@@ -147,6 +169,7 @@ func (d *Database) Migrate() {
 		);
 
 		ALTER TABLE short_links ADD COLUMN IF NOT EXISTS  correlation_id VARCHAR(255) null;
+		alter table short_links ADD UNIQUE (user_session, full_url);
 	`
 	logger.Info("Try to make migration", zap.String("query", query))
 	_, err := d.cursor.ExecContext(context, query)
@@ -156,14 +179,14 @@ func (d *Database) Migrate() {
 	}
 }
 
-func (d *Database) GetURL(uuid string, shortURL string) (string, bool) {
+func (d *Database) GetURL(shortURL string) (string, bool) {
 
 	var url string
 
-	query := "SELECT full_url FROM short_links WHERE user_session = $1 AND short_url = $2"
-	err := d.cursor.QueryRow(query, uuid, shortURL).Scan(&url)
+	query := "SELECT full_url FROM short_links WHERE short_url = $1"
+	err := d.cursor.QueryRow(query, shortURL).Scan(&url)
 	if err != nil {
-		logger.Error("Failed to get URL from database", zap.Error(err), zap.String("shortURL", shortURL), zap.String("uuid", uuid))
+		logger.Error("Failed to get URL from database", zap.Error(err), zap.String("shortURL", shortURL))
 		return "", false
 	}
 	return url, true

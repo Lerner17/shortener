@@ -15,11 +15,7 @@ import (
 	"go.uber.org/zap"
 )
 
-type ContextType string
-
 var key = []byte("haskjdhkjdhakjsd@12")
-
-var UserIDCtxName ContextType = "ctxSession"
 
 func createNewCookie(session string) *http.Cookie {
 	h := hmac.New(sha256.New, key)

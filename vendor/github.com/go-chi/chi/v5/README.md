@@ -141,7 +141,7 @@ func getArticle(w http.ResponseWriter, r *http.Request) {
   ctx := r.Context()
   article, ok := ctx.Value("article").(*Article)
   if !ok {
-    http.Error(w, http.StatusText(422), 422)
+    http.Error(w, http.StatusText(http.StatusUnprocessableEntity), http.StatusUnprocessableEntity)
     return
   }
   w.Write([]byte(fmt.Sprintf("title:%s", article.Title)))
