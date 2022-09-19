@@ -3,11 +3,13 @@ package memdb
 import (
 	"fmt"
 
+	"github.com/Lerner17/shortener/internal/config"
 	"github.com/Lerner17/shortener/internal/helpers"
 	"github.com/Lerner17/shortener/internal/models"
 )
 
 var DBInstance *memdb
+var cfg = config.GetConfig()
 
 type memdb struct {
 	state []models.URLEntity
@@ -22,9 +24,6 @@ func (m *memdb) generateShortURL() string {
 }
 
 func (m *memdb) CreateURL(uuid string, fullURL string) (string, string, error) {
-	fmt.Println("================================================================")
-	fmt.Println(uuid)
-	fmt.Println(fullURL)
 	shortURL := m.generateShortURL()
 
 	u := models.URLEntity{
@@ -34,7 +33,7 @@ func (m *memdb) CreateURL(uuid string, fullURL string) (string, string, error) {
 	}
 	m.state = append(m.state, u)
 
-	return shortURL, fullURL, nil
+	return fmt.Sprintf("%s/%s", cfg.BaseURL, shortURL), fullURL, nil
 }
 
 func (m *memdb) GetURL(uuid string, shortURL string) (string, bool) {
@@ -53,7 +52,7 @@ func (m *memdb) GetUserURLs(uuid string) models.URLs {
 		if u.UserSession == uuid {
 			url := models.URL{
 				OriginalURL: u.OriginURL,
-				ShortURL:    u.ShortURL,
+				ShortURL:    fmt.Sprintf("%s/%s", cfg.BaseURL, u.ShortURL),
 			}
 			result = append(result, url)
 		}

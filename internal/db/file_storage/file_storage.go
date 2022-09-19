@@ -8,11 +8,14 @@ import (
 	"io/ioutil"
 	"os"
 
+	"github.com/Lerner17/shortener/internal/config"
 	"github.com/Lerner17/shortener/internal/helpers"
 	"github.com/Lerner17/shortener/internal/logger"
 	"github.com/Lerner17/shortener/internal/models"
 	"go.uber.org/zap"
 )
+
+var cfg = config.GetConfig()
 
 type fileStorage struct {
 	state  []models.URLEntity
@@ -79,7 +82,7 @@ func (fs *fileStorage) CreateURL(uuid string, fullURL string) (string, string, e
 	err := fs.writeState()
 	if err != nil {
 		logger.Error("Cannot write state to file", zap.Error(err))
-		return key, fullURL, err
+		return fmt.Sprintf("%s/%s", cfg.BaseURL, key), fullURL, err
 	}
 
 	return key, fullURL, nil
@@ -101,7 +104,7 @@ func (fs *fileStorage) GetUserURLs(uuid string) models.URLs {
 		if u.UserSession == uuid {
 			url := models.URL{
 				OriginalURL: u.OriginURL,
-				ShortURL:    u.ShortURL,
+				ShortURL:    fmt.Sprintf("%s/%s", cfg.BaseURL, u.ShortURL),
 			}
 			result = append(result, url)
 		}
