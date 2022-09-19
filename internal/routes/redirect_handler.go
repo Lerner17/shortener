@@ -20,7 +20,7 @@ func RedirectHandler(db URLGetter) http.HandlerFunc {
 		session, ok := ctx.Value("ctxSession").(string)
 		logger.Info("Session:", zap.String("session", session))
 		if !ok {
-			http.Error(w, http.StatusText(422), 422)
+			http.Error(w, http.StatusText(http.StatusUnprocessableEntity), http.StatusUnprocessableEntity)
 			return
 		}
 		fullURL, ok := db.GetURL(session, urlID)

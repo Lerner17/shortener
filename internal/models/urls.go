@@ -8,14 +8,14 @@ type URL struct {
 type URLs []URL
 
 type BatchURL struct {
-	CorrelationId string `json:"correlation_id"`
+	CorrelationID string `json:"correlation_id"`
 	OriginalURL   string `json:"original_url"`
 }
 
 type BatchURLs []BatchURL
 
 type BatchShortURL struct {
-	CorrelationId string `json:"correlation_id"`
+	CorrelationID string `json:"correlation_id"`
 	ShortURL      string `json:"short_url" db:"short_url"`
 }
 

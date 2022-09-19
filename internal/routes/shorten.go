@@ -31,7 +31,7 @@ func ShortenerAPIHandler(db URLCreator) http.HandlerFunc {
 		session, ok := ctx.Value("ctxSession").(string)
 		logger.Info("session from context " + session)
 		if !ok {
-			http.Error(w, http.StatusText(422), 422)
+			http.Error(w, http.StatusText(http.StatusUnprocessableEntity), http.StatusUnprocessableEntity)
 			return
 		}
 		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {

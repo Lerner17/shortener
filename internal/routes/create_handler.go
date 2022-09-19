@@ -20,7 +20,7 @@ func CreateShortURLHandler(db CreateShortURLHandlerURLCreator) http.HandlerFunc 
 		ctx := r.Context()
 		session, ok := ctx.Value("ctxSession").(string)
 		if !ok {
-			http.Error(w, http.StatusText(422), 422)
+			http.Error(w, http.StatusText(http.StatusUnprocessableEntity), http.StatusUnprocessableEntity)
 			return
 		}
 		defer r.Body.Close()

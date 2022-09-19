@@ -80,9 +80,7 @@ func (d *Database) CreateBatchURL(uuid string, urls models.BatchURLs) (models.Ba
 	if err != nil {
 		return result, err
 	}
-	defer func(tx *sql.Tx) {
-		_ = tx.Rollback()
-	}(tx)
+	defer tx.Rollback()
 
 	stmt, err := tx.PrepareContext(context.Background(), `
 		INSERT INTO
@@ -96,18 +94,13 @@ func (d *Database) CreateBatchURL(uuid string, urls models.BatchURLs) (models.Ba
 		fmt.Println("PrepareContext ", err)
 		return result, err
 	}
-	defer func(stmt *sql.Stmt) {
-		err := stmt.Close()
-		if err != nil {
-			logger.Info("Close statement error", zap.Error(err))
-		}
-	}(stmt)
+	defer stmt.Close()
 
 	for _, u := range urls {
 		shortURL := d.getUniqueID()
-		if _, err := stmt.ExecContext(context.Background(), u.OriginalURL, u.CorrelationId, shortURL, uuid); err == nil {
+		if _, err := stmt.ExecContext(context.Background(), u.OriginalURL, u.CorrelationID, shortURL, uuid); err == nil {
 			result = append(result, models.BatchShortURL{
-				CorrelationId: u.CorrelationId,
+				CorrelationID: u.CorrelationID,
 				ShortURL:      fmt.Sprintf("%s/%s", cfg.BaseURL, shortURL),
 			})
 		} else {
@@ -132,6 +125,11 @@ func (d *Database) GetUserURLs(uuid string) models.URLs {
 
 	if err != nil {
 		logger.Error("Failed to get URL from database", zap.Error(err), zap.String("uuid", uuid))
+		return urls
+	}
+
+	if rows.Err() == nil {
+		logger.Error("Failed to get URL from database", zap.Error(rows.Err()), zap.String("uuid", uuid))
 		return urls
 	}
 	defer rows.Close()

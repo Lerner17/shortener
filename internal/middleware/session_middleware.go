@@ -15,11 +15,9 @@ import (
 	"go.uber.org/zap"
 )
 
-type ContextType string
+type contextKey string
 
 var key = []byte("haskjdhkjdhakjsd@12")
-
-var UserIDCtxName ContextType = "ctxSession"
 
 func createNewCookie(session string) *http.Cookie {
 	h := hmac.New(sha256.New, key)
@@ -71,7 +69,7 @@ func SessionMiddleware(next http.Handler) http.Handler {
 			_ = getSessionFromCookie(sessionCookie.Value, &session)
 		}
 
-		ctx := context.WithValue(r.Context(), "ctxSession", session)
+		ctx := context.WithValue(r.Context(), contextKey("ctxSession"), session)
 		logger.Info("", zap.Reflect("a", ctx))
 		http.SetCookie(w, createNewCookie(session))
 		next.ServeHTTP(w, r.WithContext(ctx))
