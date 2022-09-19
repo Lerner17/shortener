@@ -52,7 +52,16 @@ func ShortenerAPIHandler(db URLCreator) http.HandlerFunc {
 
 		if err != nil {
 			if errors.Is(err, er.ErrorShortLinkAlreadyExists) {
-				http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusConflict)
+				response := &ShortenResponse{
+					Result: fmt.Sprintf("%s/%s", cfg.BaseURL, key),
+				}
+				serializedResponse, err := json.Marshal(&response)
+				if err != nil {
+					http.Error(w, http.StatusText(http.StatusUnprocessableEntity), http.StatusUnprocessableEntity)
+				}
+				w.Write([]byte(serializedResponse))
 				return
 			}
 			http.Error(w, http.StatusText(http.StatusUnprocessableEntity), http.StatusUnprocessableEntity)

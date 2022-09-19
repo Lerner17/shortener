@@ -35,6 +35,16 @@ func (d *Database) getUniqueID() string {
 	return helpers.StringWithCharset(7)
 }
 
+func (d *Database) findShortURLFromDB(fullURL string, uuid string) (string, error) {
+	var url string
+	query := "SELECT short_url FROM short_links WHERE user_session = $1 AND full_url = $2"
+	err := d.cursor.QueryRow(query, uuid, fullURL).Scan(&url)
+	if err != nil {
+		return "", err
+	}
+	return url, nil
+}
+
 func (d *Database) CreateURL(uuid string, fullURL string) (string, string, error) {
 	ctx := context.Background()
 	shortURL := d.getUniqueID()
@@ -49,6 +59,11 @@ func (d *Database) CreateURL(uuid string, fullURL string) (string, string, error
 		logger.Error("Cannot insert to table", zap.Error(err))
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == pgerrcode.UniqueViolation {
+			query = "SELECT * FROM "
+			shortURL, err = d.findShortURLFromDB(fullURL, uuid)
+			if err != nil {
+				logger.Error("Cannot get short URL on conflict", zap.Error(err))
+			}
 			return shortURL, fullURL, er.ErrorShortLinkAlreadyExists
 		}
 		return shortURL, fullURL, err
@@ -170,8 +185,8 @@ func (d *Database) GetURL(uuid string, shortURL string) (string, bool) {
 
 	var url string
 
-	query := "SELECT full_url FROM short_links WHERE short_url = $2"
-	err := d.cursor.QueryRow(query, shortURL).Scan(&url)
+	query := "SELECT full_url FROM short_links WHERE user_session = $1 AND short_url = $2"
+	err := d.cursor.QueryRow(query, uuid, shortURL).Scan(&url)
 	if err != nil {
 		logger.Error("Failed to get URL from database", zap.Error(err), zap.String("shortURL", shortURL), zap.String("uuid", uuid))
 		return "", false

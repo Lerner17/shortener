@@ -34,7 +34,9 @@ func CreateShortURLHandler(db CreateShortURLHandlerURLCreator) http.HandlerFunc 
 
 		if err != nil {
 			if errors.Is(err, er.ErrorShortLinkAlreadyExists) {
-				http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusConflict)
+				w.Write([]byte(fmt.Sprintf("%s/%s", cfg.BaseURL, key)))
 				return
 			}
 			http.Error(w, http.StatusText(http.StatusUnprocessableEntity), http.StatusUnprocessableEntity)
