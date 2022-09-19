@@ -36,9 +36,9 @@ func (m *memdb) CreateURL(uuid string, fullURL string) (string, string, error) {
 	return shortURL, fullURL, nil
 }
 
-func (m *memdb) GetURL(uuid string, shortURL string) (string, bool) {
+func (m *memdb) GetURL(shortURL string) (string, bool) {
 	for _, u := range m.state {
-		if u.UserSession == uuid && u.ShortURL == shortURL {
+		if u.ShortURL == shortURL {
 			return u.OriginURL, true
 		}
 	}

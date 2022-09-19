@@ -10,7 +10,7 @@ import (
 )
 
 type URLStorage interface {
-	GetURL(string, string) (string, bool)
+	GetURL(string) (string, bool)
 	CreateURL(string, string) (string, string, error)
 	GetUserURLs(string) models.URLs
 	CreateBatchURL(string, models.BatchURLs) (models.BatchShortURLs, error)

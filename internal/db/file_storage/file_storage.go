@@ -88,9 +88,9 @@ func (fs *fileStorage) CreateURL(uuid string, fullURL string) (string, string, e
 	return key, fullURL, nil
 }
 
-func (fs *fileStorage) GetURL(uuid string, shortURL string) (string, bool) {
+func (fs *fileStorage) GetURL(shortURL string) (string, bool) {
 	for _, u := range fs.state {
-		if u.UserSession == uuid && u.ShortURL == shortURL {
+		if u.ShortURL == shortURL {
 			return u.OriginURL, true
 		}
 	}
