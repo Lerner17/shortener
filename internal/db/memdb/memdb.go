@@ -33,7 +33,7 @@ func (m *memdb) CreateURL(uuid string, fullURL string) (string, string, error) {
 	}
 	m.state = append(m.state, u)
 
-	return fmt.Sprintf("%s/%s", cfg.BaseURL, shortURL), fullURL, nil
+	return shortURL, fullURL, nil
 }
 
 func (m *memdb) GetURL(uuid string, shortURL string) (string, bool) {

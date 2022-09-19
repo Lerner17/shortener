@@ -82,7 +82,7 @@ func (fs *fileStorage) CreateURL(uuid string, fullURL string) (string, string, e
 	err := fs.writeState()
 	if err != nil {
 		logger.Error("Cannot write state to file", zap.Error(err))
-		return fmt.Sprintf("%s/%s", cfg.BaseURL, key), fullURL, err
+		return key, fullURL, err
 	}
 
 	return key, fullURL, nil
