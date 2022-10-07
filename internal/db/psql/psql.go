@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/Lerner17/shortener/internal/config"
 	er "github.com/Lerner17/shortener/internal/errors"
@@ -119,7 +120,7 @@ func (d *Database) GetUserURLs(uuid string) models.URLs {
 
 	urls := make(models.URLs, 0)
 	ctx := context.Background()
-	query := "SELECT full_url, short_url FROM short_links WHERE user_session = $1;"
+	query := "SELECT full_url, short_url FROM short_links WHERE user_session = $1 AND is_deleted = FALSE;"
 
 	rows, err := d.cursor.QueryContext(ctx, query, uuid)
 
@@ -170,6 +171,7 @@ func (d *Database) Migrate() {
 
 		ALTER TABLE short_links ADD COLUMN IF NOT EXISTS  correlation_id VARCHAR(255) null;
 		alter table short_links ADD UNIQUE (user_session, full_url);
+		alter table short_links ADD COLUMN IF NOT EXISTS is_deleted BOOLEAN DEFAULT FALSE;
 	`
 	logger.Info("Try to make migration", zap.String("query", query))
 	_, err := d.cursor.ExecContext(context, query)
@@ -179,17 +181,31 @@ func (d *Database) Migrate() {
 	}
 }
 
-func (d *Database) GetURL(shortURL string) (string, bool) {
+func (d *Database) DeleteBatchURL(ctx context.Context, shortURLs []string, uuid string) error {
+	// Ты лагаешь чуть
+	// cannot convert [DuB5Bqn] to text
+	query := "UPDATE short_links SET is_deleted = TRUE WHERE short_url IN ($1) AND user_session = $2"
+	_, err := d.cursor.ExecContext(ctx, query, strings.Join(shortURLs, ","), uuid)
+	if err != nil {
+		return err
+	}
+	return nil
+
+}
+
+func (d *Database) GetURL(shortURL string) (string, bool, bool) {
 
 	var url string
+	var isDeleted bool
 
-	query := "SELECT full_url FROM short_links WHERE short_url = $1"
-	err := d.cursor.QueryRow(query, shortURL).Scan(&url)
+	query := "SELECT full_url, is_deleted FROM short_links WHERE short_url = $1"
+
+	err := d.cursor.QueryRow(query, shortURL).Scan(&url, &isDeleted)
 	if err != nil {
 		logger.Error("Failed to get URL from database", zap.Error(err), zap.String("shortURL", shortURL))
-		return "", false
+		return "", false, false
 	}
-	return url, true
+	return url, isDeleted, true
 }
 
 func init() {

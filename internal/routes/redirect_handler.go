@@ -9,7 +9,7 @@ import (
 )
 
 type URLGetter interface {
-	GetURL(string) (string, bool)
+	GetURL(string) (string, bool, bool)
 }
 
 func RedirectHandler(db URLGetter) http.HandlerFunc {
@@ -23,10 +23,15 @@ func RedirectHandler(db URLGetter) http.HandlerFunc {
 			http.Error(w, http.StatusText(http.StatusUnprocessableEntity), http.StatusUnprocessableEntity)
 			return
 		}
-		fullURL, ok := db.GetURL(urlID)
+		fullURL, isDeleted, ok := db.GetURL(urlID)
 		logger.Info("Get from DB status", zap.Bool("ok", ok))
 		logger.Info("Value from database", zap.String("value", fullURL))
 		if ok {
+			if isDeleted == true {
+				w.Header().Set("Content-Type", "plain/text")
+				http.Redirect(w, r, fullURL, http.StatusGone)
+				return
+			}
 			w.Header().Set("Content-Type", "plain/text")
 			http.Redirect(w, r, fullURL, http.StatusTemporaryRedirect)
 		} else {
