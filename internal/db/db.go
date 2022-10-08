@@ -3,6 +3,9 @@ package db
 import (
 	"context"
 
+	"github.com/Lerner17/shortener/internal/config"
+	filestorage "github.com/Lerner17/shortener/internal/db/file_storage"
+	"github.com/Lerner17/shortener/internal/db/memdb"
 	"github.com/Lerner17/shortener/internal/db/psql"
 	"github.com/Lerner17/shortener/internal/logger"
 	"github.com/Lerner17/shortener/internal/models"
@@ -17,18 +20,18 @@ type URLStorage interface {
 }
 
 func GetDB() URLStorage {
-	// cfg := config.GetConfig()
+	cfg := config.GetConfig()
 
-	// if cfg.DatabaseDsn != "" {
-	logger.Info("using postgres database")
-	psql := psql.NewPostgres()
-	psql.Migrate()
-	return psql
-	// }
-	// if cfg.FileStoragePath != "" {
-	// 	logger.Info("using file storage")
-	// 	return filestorage.NewFileStorage(cfg.FileStoragePath)
-	// }
-	// logger.Info("using memory database")
-	// return memdb.DBInstance
+	if cfg.DatabaseDsn != "" {
+		logger.Info("using postgres database")
+		psql := psql.NewPostgres()
+		psql.Migrate()
+		return psql
+	}
+	if cfg.FileStoragePath != "" {
+		logger.Info("using file storage")
+		return filestorage.NewFileStorage(cfg.FileStoragePath)
+	}
+	logger.Info("using memory database")
+	return memdb.DBInstance
 }

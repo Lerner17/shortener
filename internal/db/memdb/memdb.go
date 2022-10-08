@@ -1,6 +1,7 @@
 package memdb
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/Lerner17/shortener/internal/config"
@@ -30,19 +31,20 @@ func (m *memdb) CreateURL(uuid string, fullURL string) (string, string, error) {
 		OriginURL:   fullURL,
 		ShortURL:    shortURL,
 		UserSession: uuid,
+		IsDeleted:   false,
 	}
 	m.state = append(m.state, u)
 
 	return shortURL, fullURL, nil
 }
 
-func (m *memdb) GetURL(shortURL string) (string, bool) {
+func (m *memdb) GetURL(shortURL string) (string, bool, bool) {
 	for _, u := range m.state {
 		if u.ShortURL == shortURL {
-			return u.OriginURL, true
+			return u.OriginURL, u.IsDeleted, true
 		}
 	}
-	return "", false
+	return "", false, false
 }
 
 func (m *memdb) GetUserURLs(uuid string) models.URLs {
@@ -58,6 +60,18 @@ func (m *memdb) GetUserURLs(uuid string) models.URLs {
 		}
 	}
 	return result
+}
+
+func (m *memdb) DeleteBatchURL(ctx context.Context, shortURLs []string, uuid string) error {
+
+	for _, sh := range shortURLs {
+		for i := 0; i < len(m.state); i++ {
+			if m.state[i].ShortURL == sh {
+				m.state[i].IsDeleted = true
+			}
+		}
+	}
+	return nil
 }
 
 func (m *memdb) CreateBatchURL(uuid string, urls models.BatchURLs) (models.BatchShortURLs, error) {

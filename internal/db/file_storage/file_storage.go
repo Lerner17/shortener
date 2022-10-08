@@ -2,6 +2,7 @@ package filestorage
 
 import (
 	"bufio"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -76,6 +77,7 @@ func (fs *fileStorage) CreateURL(uuid string, fullURL string) (string, string, e
 		ShortURL:      key,
 		UserSession:   uuid,
 		CorrelationID: "",
+		IsDeleted:     false,
 	}
 
 	fs.state = append(fs.state, url)
@@ -88,13 +90,24 @@ func (fs *fileStorage) CreateURL(uuid string, fullURL string) (string, string, e
 	return key, fullURL, nil
 }
 
-func (fs *fileStorage) GetURL(shortURL string) (string, bool) {
-	for _, u := range fs.state {
-		if u.ShortURL == shortURL {
-			return u.OriginURL, true
+func (fs *fileStorage) DeleteBatchURL(ctx context.Context, shortURLs []string, uuid string) error {
+	for _, sh := range shortURLs {
+		for i := 0; i < len(fs.state); i++ {
+			if fs.state[i].ShortURL == sh {
+				fs.state[i].IsDeleted = true
+			}
 		}
 	}
-	return "", false
+	return nil
+}
+
+func (fs *fileStorage) GetURL(shortURL string) (string, bool, bool) {
+	for _, u := range fs.state {
+		if u.ShortURL == shortURL {
+			return u.OriginURL, u.IsDeleted, true
+		}
+	}
+	return "", false, false
 }
 
 func (fs *fileStorage) GetUserURLs(uuid string) models.URLs {

@@ -26,4 +26,5 @@ type URLEntity struct {
 	ShortURL      string
 	UserSession   string
 	CorrelationID string
+	IsDeleted     bool
 }
