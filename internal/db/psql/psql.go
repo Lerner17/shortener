@@ -182,15 +182,12 @@ func (d *Database) Migrate() {
 }
 
 func (d *Database) DeleteBatchURL(ctx context.Context, shortURLs []string, uuid string) error {
-	// Ты лагаешь чуть
-	// cannot convert [DuB5Bqn] to text
-	query := "UPDATE short_links SET is_deleted = TRUE WHERE short_url IN ($1) AND user_session = $2"
-	_, err := d.cursor.ExecContext(ctx, query, strings.Join(shortURLs, ","), uuid)
+	query := "UPDATE short_links SET is_deleted=TRUE WHERE short_url = ANY($1::text[]) AND user_session = $2"
+	_, err := d.cursor.ExecContext(ctx, query, "{"+strings.Join(shortURLs, ",")+"}", uuid)
 	if err != nil {
 		return err
 	}
 	return nil
-
 }
 
 func (d *Database) GetURL(shortURL string) (string, bool, bool) {

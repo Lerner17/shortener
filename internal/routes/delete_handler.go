@@ -3,6 +3,7 @@ package routes
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 
@@ -35,6 +36,10 @@ func DeleteUserURLsAPIHandler(db URLDeleter) http.HandlerFunc {
 		}
 		ctx := context.Background()
 		go func() {
+
+			fmt.Println("================================================================")
+			fmt.Println(shortURLs)
+			fmt.Println("================================================================")
 			if err = db.DeleteBatchURL(ctx, shortURLs, session); err != nil {
 				logger.Error("cannot delete batch", zap.Error(err))
 			}
