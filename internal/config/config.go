@@ -3,11 +3,15 @@ package config
 import (
 	"flag"
 	"fmt"
+	"log"
+	"sync"
 
 	"github.com/Lerner17/shortener/internal/logger"
 	"github.com/caarlos0/env/v6"
 	"go.uber.org/zap"
 )
+
+var once sync.Once
 
 type Config struct {
 	ServerAddress   string `env:"SERVER_ADDRESS" envDefault:"localhost:8080"`
@@ -17,10 +21,6 @@ type Config struct {
 }
 
 var Instance *Config
-
-func init() {
-	Instance = &Config{}
-}
 
 func (c *Config) ParseConfig() {
 	if err := env.Parse(Instance); err != nil {
@@ -56,6 +56,11 @@ func (c *Config) ParseConfig() {
 }
 
 func GetConfig() *Config {
-
+	log.Println("Load config...")
+	once.Do(func() {
+		Instance = new(Config)
+		Instance.ParseConfig()
+	})
+	log.Println("Successfully load config from env variables")
 	return Instance
 }
