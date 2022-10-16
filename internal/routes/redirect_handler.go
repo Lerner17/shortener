@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/Lerner17/shortener/internal/logger"
+	"github.com/Lerner17/shortener/internal/models"
 	"github.com/go-chi/chi/v5"
 	"go.uber.org/zap"
 )
@@ -17,7 +18,7 @@ func RedirectHandler(db URLGetter) http.HandlerFunc {
 		urlID := chi.URLParam(r, "urlID")
 		logger.Info("URL ID:", zap.String("urlID", urlID))
 		ctx := r.Context()
-		session, ok := ctx.Value("ctxSession").(string)
+		session, ok := ctx.Value(models.KeyCtxSession).(string)
 		logger.Info("Session:", zap.String("session", session))
 		if !ok {
 			http.Error(w, http.StatusText(http.StatusUnprocessableEntity), http.StatusUnprocessableEntity)

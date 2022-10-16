@@ -14,7 +14,7 @@ type URLListGetter interface {
 func UserURLsAPIHandler(db URLListGetter) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		session, ok := ctx.Value("ctxSession").(string)
+		session, ok := ctx.Value(models.KeyCtxSession).(string)
 		if !ok {
 			http.Error(w, http.StatusText(http.StatusUnprocessableEntity), http.StatusUnprocessableEntity)
 			return

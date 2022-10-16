@@ -8,6 +8,7 @@ import (
 
 	"github.com/Lerner17/shortener/internal/config"
 	er "github.com/Lerner17/shortener/internal/errors"
+	"github.com/Lerner17/shortener/internal/models"
 )
 
 type CreateShortURLHandlerURLCreator interface {
@@ -18,7 +19,7 @@ func CreateShortURLHandler(db CreateShortURLHandlerURLCreator) http.HandlerFunc 
 	return func(w http.ResponseWriter, r *http.Request) {
 		cfg := config.GetConfig()
 		ctx := r.Context()
-		session, ok := ctx.Value("ctxSession").(string)
+		session, ok := ctx.Value(models.KeyCtxSession).(string)
 		if !ok {
 			http.Error(w, http.StatusText(http.StatusUnprocessableEntity), http.StatusUnprocessableEntity)
 			return
