@@ -50,10 +50,10 @@ var once sync.Once
 
 func GetConfig() *Config {
 	log.Println("Load config...")
-	once.Do(func() {
-		instance = new(Config)
-		instance.Parse()
-	})
+	// once.Do(func() {
+	instance = new(Config)
+	// instance.Parse()
+	// })
 	log.Println("Successfully load config from env variables")
 	return instance
 }
