@@ -3,10 +3,10 @@ package config
 import (
 	"flag"
 	"fmt"
-	"log"
-	"sync"
 
+	"github.com/Lerner17/shortener/internal/logger"
 	"github.com/caarlos0/env/v6"
+	"go.uber.org/zap"
 )
 
 type Config struct {
@@ -16,10 +16,14 @@ type Config struct {
 	DatabaseDsn     string `env:"DATABASE_DSN"`
 }
 
-var instance *Config
+var Instance *Config
 
-func (c *Config) init() {
-	if err := env.Parse(c); err != nil {
+func init() {
+	Instance = &Config{}
+}
+
+func (c *Config) ParseConfig() {
+	if err := env.Parse(Instance); err != nil {
 		fmt.Printf("Cannot parse env vars %v\n", err)
 	}
 	serverAddressPtr := flag.String("a", "", "")
@@ -27,32 +31,31 @@ func (c *Config) init() {
 	fileStoragePathPtr := flag.String("f", "", "")
 	DatabaseDsnPtr := flag.String("d", "", "")
 	flag.Parse()
-
 	if *serverAddressPtr != "" {
-		c.ServerAddress = *serverAddressPtr
+		Instance.ServerAddress = *serverAddressPtr
 	}
 
 	if *baseURLPtr != "" {
-		c.BaseURL = *baseURLPtr
+		Instance.BaseURL = *baseURLPtr
 	}
 
 	if *fileStoragePathPtr != "" {
-		c.FileStoragePath = *fileStoragePathPtr
+		Instance.FileStoragePath = *fileStoragePathPtr
 	}
 
 	if *DatabaseDsnPtr != "" {
-		c.DatabaseDsn = *DatabaseDsnPtr
+		Instance.DatabaseDsn = *DatabaseDsnPtr
 	}
+
+	logger.Info("load configuration for application",
+		zap.String("server address", *serverAddressPtr),
+		zap.String("base URL", *baseURLPtr),
+		zap.String("file storage path", *fileStoragePathPtr),
+		zap.String("database dns url", *DatabaseDsnPtr),
+	)
 }
 
-var once sync.Once
-
 func GetConfig() *Config {
-	log.Println("Load config...")
-	once.Do(func() {
-		instance = new(Config)
-		instance.init()
-	})
-	log.Println("Successfully load config from env variables")
-	return instance
+
+	return Instance
 }
