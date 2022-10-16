@@ -27,7 +27,7 @@ func RedirectHandler(db URLGetter) http.HandlerFunc {
 		logger.Info("Get from DB status", zap.Bool("ok", ok))
 		logger.Info("Value from database", zap.String("value", fullURL))
 		if ok {
-			if isDeleted == true {
+			if isDeleted {
 				w.Header().Set("Content-Type", "plain/text")
 				http.Redirect(w, r, fullURL, http.StatusGone)
 				return

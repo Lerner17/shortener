@@ -41,7 +41,5 @@ func DeleteUserURLsAPIHandler(db URLDeleter) http.HandlerFunc {
 		}()
 
 		w.WriteHeader(http.StatusAccepted)
-		return
-
 	}
 }

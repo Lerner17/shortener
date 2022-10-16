@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 
 	"github.com/Lerner17/shortener/internal/config"
@@ -46,7 +45,7 @@ func NewFileStorage(dbPath string) *fileStorage {
 
 	var data []models.URLEntity
 
-	byteValue, _ := ioutil.ReadAll(file)
+	byteValue, _ := io.ReadAll(file)
 	err = json.Unmarshal(byteValue, &data)
 	if err != nil {
 		data = make([]models.URLEntity, 0)
