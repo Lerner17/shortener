@@ -11,15 +11,10 @@ import (
 	"strings"
 
 	"github.com/Lerner17/shortener/internal/logger"
+	"github.com/Lerner17/shortener/internal/models"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
-
-type keyCtx string
-
-const keyCtxSession keyCtx = "ctxSession"
-
-type valCtx string
 
 var key = []byte("haskjdhkjdhakjsd@12")
 
@@ -73,7 +68,7 @@ func SessionMiddleware(next http.Handler) http.Handler {
 			_ = getSessionFromCookie(sessionCookie.Value, &session)
 		}
 
-		ctx := context.WithValue(r.Context(), keyCtxSession, session)
+		ctx := context.WithValue(r.Context(), models.KeyCtxSession, session)
 		logger.Info("", zap.Reflect("a", ctx))
 		http.SetCookie(w, createNewCookie(session))
 		next.ServeHTTP(w, r.WithContext(ctx))

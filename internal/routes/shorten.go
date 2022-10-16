@@ -9,6 +9,7 @@ import (
 	"github.com/Lerner17/shortener/internal/config"
 	er "github.com/Lerner17/shortener/internal/errors"
 	"github.com/Lerner17/shortener/internal/logger"
+	"github.com/Lerner17/shortener/internal/models"
 )
 
 type ShortenBody struct {
@@ -28,7 +29,7 @@ func ShortenerAPIHandler(db URLCreator) http.HandlerFunc {
 		cfg := config.GetConfig()
 		var body ShortenBody
 		ctx := r.Context()
-		session, ok := ctx.Value("ctxSession").(string)
+		session, ok := ctx.Value(models.KeyCtxSession).(string)
 		logger.Info("session from context " + session)
 		if !ok {
 			http.Error(w, http.StatusText(http.StatusUnprocessableEntity), http.StatusUnprocessableEntity)
