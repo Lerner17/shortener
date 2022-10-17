@@ -2,6 +2,9 @@ package config
 
 import (
 	"errors"
+	"flag"
+
+	"github.com/caarlos0/env/v6"
 )
 
 var ErrUnknownParam = errors.New("unknown param")
@@ -37,6 +40,7 @@ func Instance() *Config {
 	if instance == nil {
 		instance = new(Config)
 		instance.initInv()
+		instance.init()
 	}
 	return instance
 }
@@ -59,27 +63,31 @@ func (c *Config) Param(p string) (string, error) {
 // initInv check from inv
 func (c *Config) initInv() {
 	// Get from inv
-	// bu := flag.String(mapVarToInv[BaseURL], "", "")
-	// sa := flag.String(mapVarToInv[ServerAddress], "", "")
-	// fs := flag.String(mapVarToInv[FileStoragePath], "", "")
-	// db := flag.String(mapVarToInv[DatabaseDsn], "", "")
-	// flag.Parse()
+	if err := env.Parse(c); err != nil {
+		return
+	}
+}
 
-	// if *bu != "" {
-	// 	c.BaseURL = *bu
-	// }
-	// if *sa != "" {
-	// 	c.ServerAddress = *sa
-	// }
-	// if *fs != "" {
-	// 	c.FileStoragePath = *fs
-	// }
-	// if *db != "" {
-	// 	c.DatabaseDsn = *db
-	// }
-	// if err := env.Parse(c); err != nil {
-	// 	return
-	// }
+// initParams from cli params
+func (c *Config) init() {
+	bu := flag.String(mapVarToInv[BaseURL], "", "")
+	sa := flag.String(mapVarToInv[ServerAddress], "", "")
+	fs := flag.String(mapVarToInv[FileStoragePath], "", "")
+	db := flag.String(mapVarToInv[DatabaseDsn], "", "")
+	flag.Parse()
+
+	if *bu != "" {
+		c.BaseURL = *bu
+	}
+	if *sa != "" {
+		c.ServerAddress = *sa
+	}
+	if *fs != "" {
+		c.FileStoragePath = *fs
+	}
+	if *db != "" {
+		c.DatabaseDsn = *db
+	}
 }
 
 // var instance *Config
@@ -114,7 +122,7 @@ func (c *Config) initInv() {
 
 // var once sync.Once
 
-// func Instance() *Config {
+// func GetConfig() *Config {
 // 	once.Do(func() {
 // 		log.Println("Load config...")
 // 		instance = new(Config)
