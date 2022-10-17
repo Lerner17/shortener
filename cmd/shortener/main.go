@@ -8,6 +8,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -16,10 +17,34 @@ import (
 	"github.com/Lerner17/shortener/internal/routes"
 )
 
-func main() {
-	r := routes.NewRouter()
-	cfg := config.GetConfig()
+func parsArgs(c *config.Config) {
+	serverAddressPtr := flag.String("a", "", "")
+	baseURLPtr := flag.String("b", "", "")
+	fileStoragePathPtr := flag.String("f", "", "")
+	DatabaseDsnPtr := flag.String("d", "", "")
+	flag.Parse()
 
+	if *serverAddressPtr != "" {
+		c.ServerAddress = *serverAddressPtr
+	}
+
+	if *baseURLPtr != "" {
+		c.BaseURL = *baseURLPtr
+	}
+
+	if *fileStoragePathPtr != "" {
+		c.FileStoragePath = *fileStoragePathPtr
+	}
+
+	if *DatabaseDsnPtr != "" {
+		c.DatabaseDsn = *DatabaseDsnPtr
+	}
+}
+
+func main() {
+	cfg := config.GetConfig()
+	parsArgs(cfg)
+	r := routes.NewRouter()
 	fmt.Println(cfg)
 	if err := http.ListenAndServe(cfg.ServerAddress, r); err != nil {
 		log.Fatal(err)
