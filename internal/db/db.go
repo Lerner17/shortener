@@ -5,6 +5,7 @@ import (
 
 	"github.com/Lerner17/shortener/internal/config"
 	filestorage "github.com/Lerner17/shortener/internal/db/file_storage"
+
 	"github.com/Lerner17/shortener/internal/db/memdb"
 	"github.com/Lerner17/shortener/internal/db/psql"
 	"github.com/Lerner17/shortener/internal/logger"
@@ -20,7 +21,7 @@ type URLStorage interface {
 }
 
 func GetDB() URLStorage {
-	cfg := config.GetConfig()
+	cfg := config.Instance()
 
 	if cfg.DatabaseDsn != "" {
 		logger.Info("using postgres database")

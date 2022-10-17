@@ -17,8 +17,7 @@ import (
 
 func main() {
 	r := routes.NewRouter()
-	cfg := config.GetConfig()
-	cfg.Parse()
+	cfg := config.Instance()
 	if err := http.ListenAndServe(cfg.ServerAddress, r); err != nil {
 		log.Fatal(err)
 	}

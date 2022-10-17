@@ -17,7 +17,7 @@ type CreateShortURLHandlerURLCreator interface {
 
 func CreateShortURLHandler(db CreateShortURLHandlerURLCreator) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		cfg := config.GetConfig()
+		cfg := config.Instance()
 		ctx := r.Context()
 		session, ok := ctx.Value(models.KeyCtxSession).(string)
 		if !ok {

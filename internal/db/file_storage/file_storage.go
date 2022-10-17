@@ -15,7 +15,7 @@ import (
 	"go.uber.org/zap"
 )
 
-var cfg = config.GetConfig()
+var cfg = config.Instance()
 
 type fileStorage struct {
 	state  []models.URLEntity

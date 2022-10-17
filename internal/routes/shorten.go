@@ -26,7 +26,7 @@ type URLCreator interface {
 
 func ShortenerAPIHandler(db URLCreator) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		cfg := config.GetConfig()
+		cfg := config.Instance()
 		var body ShortenBody
 		ctx := r.Context()
 		session, ok := ctx.Value(models.KeyCtxSession).(string)

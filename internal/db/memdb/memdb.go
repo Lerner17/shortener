@@ -10,7 +10,7 @@ import (
 )
 
 var DBInstance *memdb
-var cfg = config.GetConfig()
+var cfg = config.Instance()
 
 type memdb struct {
 	state []models.URLEntity

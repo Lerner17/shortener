@@ -75,7 +75,7 @@ func (d *Database) CreateURL(uuid string, fullURL string) (string, string, error
 
 func (d *Database) CreateBatchURL(uuid string, urls models.BatchURLs) (models.BatchShortURLs, error) {
 	result := make(models.BatchShortURLs, 0)
-	cfg := config.GetConfig()
+	cfg := config.Instance()
 	tx, err := d.cursor.Begin()
 
 	if err != nil {
@@ -206,7 +206,7 @@ func (d *Database) GetURL(shortURL string) (string, bool, bool) {
 }
 
 func init() {
-	dsn := config.GetConfig().DatabaseDsn
+	dsn := config.Instance().DatabaseDsn
 	if dsn == "" {
 		fmt.Fprint(os.Stderr, "Cannot connect to database")
 	}

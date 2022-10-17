@@ -11,7 +11,6 @@ import (
 )
 
 func NewRouter() chi.Router {
-
 	var db = db.GetDB()
 
 	r := chi.NewRouter()
