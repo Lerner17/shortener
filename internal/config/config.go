@@ -18,6 +18,9 @@ type Config struct {
 var instance *Config
 
 func init() {
+	log.Println("Load config...")
+	log.Println("Successfully load config from env variables")
+	instance = new(Config)
 	if err := env.Parse(instance); err != nil {
 		fmt.Printf("Cannot parse env vars %v\n", err)
 	}
@@ -26,10 +29,5 @@ func init() {
 var once sync.Once
 
 func GetConfig() *Config {
-	if instance == nil {
-		instance = new(Config)
-	}
-	log.Println("Load config...")
-	log.Println("Successfully load config from env variables")
 	return instance
 }

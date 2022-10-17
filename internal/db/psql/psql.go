@@ -150,6 +150,18 @@ func (d *Database) GetUserURLs(uuid string) models.URLs {
 }
 
 func NewPostgres() *Database {
+	dsn := config.GetConfig().DatabaseDsn
+	if dsn == "" {
+		fmt.Fprint(os.Stderr, "Cannot connect to database")
+	}
+	cursor, err := sql.Open("pgx", dsn)
+	if err != nil {
+		panic(err)
+	}
+	instance = &Database{
+		cursor: cursor,
+	}
+	logger.Info("Connect to database")
 	return instance
 }
 
@@ -203,20 +215,4 @@ func (d *Database) GetURL(shortURL string) (string, bool, bool) {
 		return "", false, false
 	}
 	return url, isDeleted, true
-}
-
-func init() {
-	dsn := config.GetConfig().DatabaseDsn
-	if dsn == "" {
-		fmt.Fprint(os.Stderr, "Cannot connect to database")
-	}
-	cursor, err := sql.Open("pgx", dsn)
-	if err != nil {
-		panic(err)
-	}
-	instance = &Database{
-		cursor: cursor,
-	}
-	logger.Info("Connect to database")
-
 }
