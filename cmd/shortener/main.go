@@ -8,6 +8,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -18,7 +19,7 @@ import (
 func main() {
 	r := routes.NewRouter()
 	cfg := config.GetConfig()
-	cfg.ParseConfig()
+	fmt.Println(cfg)
 	if err := http.ListenAndServe(cfg.ServerAddress, r); err != nil {
 		log.Fatal(err)
 	}
