@@ -1,7 +1,6 @@
 package config
 
 import (
-	"flag"
 	"fmt"
 	"log"
 	"sync"
@@ -18,41 +17,17 @@ type Config struct {
 
 var instance *Config
 
-func (c *Config) init() {
-	if err := env.Parse(c); err != nil {
+func init() {
+	log.Println("Load config...")
+	log.Println("Successfully load config from env variables")
+	instance = new(Config)
+	if err := env.Parse(instance); err != nil {
 		fmt.Printf("Cannot parse env vars %v\n", err)
-	}
-	serverAddressPtr := flag.String("a", "", "")
-	baseURLPtr := flag.String("b", "", "")
-	fileStoragePathPtr := flag.String("f", "", "")
-	DatabaseDsnPtr := flag.String("d", "", "")
-	flag.Parse()
-
-	if *serverAddressPtr != "" {
-		c.ServerAddress = *serverAddressPtr
-	}
-
-	if *baseURLPtr != "" {
-		c.BaseURL = *baseURLPtr
-	}
-
-	if *fileStoragePathPtr != "" {
-		c.FileStoragePath = *fileStoragePathPtr
-	}
-
-	if *DatabaseDsnPtr != "" {
-		c.DatabaseDsn = *DatabaseDsnPtr
 	}
 }
 
 var once sync.Once
 
 func GetConfig() *Config {
-	log.Println("Load config...")
-	once.Do(func() {
-		instance = new(Config)
-		instance.init()
-	})
-	log.Println("Successfully load config from env variables")
 	return instance
 }

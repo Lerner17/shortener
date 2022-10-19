@@ -1,6 +1,8 @@
 package db
 
 import (
+	"context"
+
 	"github.com/Lerner17/shortener/internal/config"
 	filestorage "github.com/Lerner17/shortener/internal/db/file_storage"
 	"github.com/Lerner17/shortener/internal/db/memdb"
@@ -10,10 +12,11 @@ import (
 )
 
 type URLStorage interface {
-	GetURL(string) (string, bool)
+	GetURL(string) (string, bool, bool)
 	CreateURL(string, string) (string, string, error)
 	GetUserURLs(string) models.URLs
 	CreateBatchURL(string, models.BatchURLs) (models.BatchShortURLs, error)
+	DeleteBatchURL(context.Context, []string, string) error
 }
 
 func GetDB() URLStorage {

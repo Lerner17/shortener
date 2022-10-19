@@ -4,12 +4,13 @@ import (
 	"net/http"
 
 	"github.com/Lerner17/shortener/internal/logger"
+	"github.com/Lerner17/shortener/internal/models"
 	"github.com/go-chi/chi/v5"
 	"go.uber.org/zap"
 )
 
 type URLGetter interface {
-	GetURL(string) (string, bool)
+	GetURL(string) (string, bool, bool)
 }
 
 func RedirectHandler(db URLGetter) http.HandlerFunc {
@@ -17,16 +18,21 @@ func RedirectHandler(db URLGetter) http.HandlerFunc {
 		urlID := chi.URLParam(r, "urlID")
 		logger.Info("URL ID:", zap.String("urlID", urlID))
 		ctx := r.Context()
-		session, ok := ctx.Value("ctxSession").(string)
+		session, ok := ctx.Value(models.KeyCtxSession).(string)
 		logger.Info("Session:", zap.String("session", session))
 		if !ok {
 			http.Error(w, http.StatusText(http.StatusUnprocessableEntity), http.StatusUnprocessableEntity)
 			return
 		}
-		fullURL, ok := db.GetURL(urlID)
+		fullURL, isDeleted, ok := db.GetURL(urlID)
 		logger.Info("Get from DB status", zap.Bool("ok", ok))
 		logger.Info("Value from database", zap.String("value", fullURL))
 		if ok {
+			if isDeleted {
+				w.Header().Set("Content-Type", "plain/text")
+				w.WriteHeader(http.StatusGone)
+				return
+			}
 			w.Header().Set("Content-Type", "plain/text")
 			http.Redirect(w, r, fullURL, http.StatusTemporaryRedirect)
 		} else {

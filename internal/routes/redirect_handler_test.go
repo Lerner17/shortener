@@ -1,38 +1,31 @@
 package routes
 
 import (
-	"fmt"
 	"net/http"
-	"net/http/httptest"
+	"reflect"
 	"testing"
 
-	"github.com/Lerner17/shortener/internal/db"
-	"github.com/Lerner17/shortener/internal/helpers"
-	"github.com/stretchr/testify/assert"
+	"github.com/Lerner17/shortener/internal/config"
 )
 
+var cgf = config.GetConfig()
+
 func TestRedirectHandler(t *testing.T) {
-	r := NewRouter()
-	ts := httptest.NewServer(r)
-	defer ts.Close()
-
-	database := db.GetDB()
-
-	resp, _ := helpers.TestRequest(t, ts, http.MethodGet, fmt.Sprintf("/%s", "abc331"), nil)
-	defer resp.Body.Close()
-	assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
-
-	resp, _ = helpers.TestRequest(t, ts, http.MethodGet, fmt.Sprintf("/%s", "asdsadad"), nil)
-	defer resp.Body.Close()
-	assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
-
-	resp, _ = helpers.TestRequest(t, ts, http.MethodGet, fmt.Sprintf("/%s", "asdsadad"), nil)
-	defer resp.Body.Close()
-	assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
-
-	id, _, _ := database.CreateURL("http://yandex.ru", "")
-	resp, _ = helpers.TestRequest(t, ts, http.MethodGet, fmt.Sprintf("/%s", id), nil)
-	defer resp.Body.Close()
-	assert.Equal(t, http.StatusTemporaryRedirect, resp.StatusCode)
-
+	type args struct {
+		db URLGetter
+	}
+	tests := []struct {
+		name string
+		args args
+		want http.HandlerFunc
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := RedirectHandler(tt.args.db); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("RedirectHandler() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
