@@ -30,7 +30,7 @@ func RedirectHandler(db URLGetter) http.HandlerFunc {
 		if ok {
 			if isDeleted {
 				w.Header().Set("Content-Type", "plain/text")
-				http.Redirect(w, r, fullURL, http.StatusGone)
+				w.WriteHeader(http.StatusGone)
 				return
 			}
 			w.Header().Set("Content-Type", "plain/text")
